@@ -1,9 +1,14 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
 #include <string>
 #include <list>
-#include <GL/gl.h>
 
 class Texture;
 

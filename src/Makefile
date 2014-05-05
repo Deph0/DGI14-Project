@@ -1,10 +1,15 @@
 CC = g++
 CFLAGS = -c -Wall -ggdb
 #CFLAGS = -c -Wall -O3
-#LDFLAGS =
+LDFLAGS =
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+LDFLAGS = -framework GLUT -framework OpenGL
+LIBS = -lSOIL
+else
 LIBS = -lGL -lglut -lGLU -lSOIL
-LDFLAGS= -framework GLUT -framework OpenGL -framework Cocoa
 #LIBS = -l3ds -lGL -lglut -lGLU -lGLEW
+endif
 TARGET = model
 SRCS = \
 model.cpp \

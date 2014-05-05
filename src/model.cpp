@@ -1,10 +1,16 @@
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <SOIL/SOIL.h>
+#else
+#include <GL/gl.h>
+#include <SOIL.h>
+#endif
+
 #include "model.h"
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
 #include <string.h>
-#include <GL/gl.h>
-#include <SOIL.h>
 
 
 void Model::cleanup()
@@ -181,7 +187,7 @@ void Model::loadMaterials(const std::string& fname) //throw (ModelException)
 				img = cline + 7;
 			}
 			Texture* t = new Texture();
-			t->load(std::string("../../res/") + img);
+			t->load(std::string("../res/") + img);
 			textures.push_back(t);
 			mat->diffuseTexture = t;
 		}

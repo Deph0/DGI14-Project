@@ -1,6 +1,10 @@
-#include "texture.h"
+#ifdef __APPLE__
+#include <SOIL/SOIL.h>
+#else
 #include <SOIL.h>
+#endif
 
+#include "texture.h"
 
 void Texture::load(const std::string& fname) const //throw (TextureException)
 {

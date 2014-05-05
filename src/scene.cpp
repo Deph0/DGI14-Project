@@ -1,7 +1,14 @@
-#include "model.h"
-#include <stdio.h>
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/gl.h>
 #include <GL/glut.h>
+#endif
+
+#include "model.h"
+#include <stdio.h>
 
 Model model;
 
@@ -69,7 +76,7 @@ int main(int argc, char** argv)
 
 	initialize();
 	try {
-		model.load("../../res/starter_file.obj");
+		model.load("../res/starter_file.obj");
 	}
 	catch (const std::exception& e) {
 		fprintf(stderr, "error: %s\n", e.what());
