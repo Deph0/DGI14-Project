@@ -52,6 +52,7 @@ void display()
 
 void keyboard(unsigned char key, int x, int y)
 {
+	// Escape
 	if (key == 27)
 		exit(0);
 }
