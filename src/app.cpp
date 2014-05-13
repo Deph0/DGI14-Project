@@ -87,6 +87,7 @@ void App::initialize()
 void App::reshape(int width, int height)
 {
 	scene.camera.setPerspective(width, height);
+	display();
 }
 
 
