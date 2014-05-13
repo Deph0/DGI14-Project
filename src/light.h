@@ -2,7 +2,7 @@
 #define LIGHT_H
 
 #include <list>
-#include <GL/gl.h>
+#include "opengl.h"
 #include "object.h"
 
 
