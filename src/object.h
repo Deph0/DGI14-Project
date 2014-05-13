@@ -1,29 +1,35 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include <list>
-#include <vector>
+#include <glm/glm.hpp>
 #include <string>
+#include "drawable.h"
 
-class Material;
 
-struct Object {
-	typedef std::list<Object*> List;
-	typedef List::const_iterator cIter;
-	typedef List::iterator Iter;
+class Object : public Drawable {
+public:
+	Object();
 
-	Object(const std::string& n)
-	: name(n)
-	, smoothShading(false)
-	, material(NULL)
-	{ }
+	void print() const;
+
+	void translate() const;
+	void rotate() const;
+	void scale() const;
+	// Do translate, rotate and scale
+	void transform() const;
+	// Set all rotations to zero angle
+	void resetRotation();
 
 	std::string name;
-	std::vector<float> vertices;
-	std::vector<float> normals;
-	std::vector<float> texels;
-	bool smoothShading;
-	Material* material;
+
+	glm::vec3 position;
+	glm::vec3 scaling;
+
+	struct {
+		glm::vec4 x;
+		glm::vec4 y;
+		glm::vec4 z;
+	} rotation;
 };
 
 #endif // OBJECT_H

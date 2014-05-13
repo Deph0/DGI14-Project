@@ -1,20 +1,24 @@
 CC = g++
 CFLAGS = -c -Wall -ggdb
-#CFLAGS = -c -Wall -O3
-LDFLAGS =
-UNAME := $(shell uname)
-ifeq ($(UNAME), Darwin)
-LDFLAGS = -framework GLUT -framework OpenGL
-LIBS = -lSOIL
-else
-LIBS = -lGL -lglut -lGLU -lSOIL
-#LIBS = -l3ds -lGL -lglut -lGLU -lGLEW
-endif
-TARGET = model
+INCS = -I../lib
+DEFS = -DRESOURCE_PATH="\"../res/\""
+LDFLAGS = -L../lib/pugixml -L../lib/SOIL
+LIBS = -lGL -lglut -lGLU -lSOIL -lpugixml
+TARGET = rainyday
 SRCS = \
-model.cpp \
+object.cpp \
+material.cpp \
 texture.cpp \
-scene.cpp
+camera.cpp \
+light.cpp \
+point_light.cpp \
+directional_light.cpp \
+geometry.cpp \
+dae_model.cpp \
+obj_model.cpp \
+scene.cpp \
+util.cpp \
+app.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(SRCS) $(TARGET)
@@ -23,7 +27,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS) $(LIBS)
 
 .cpp.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $(DEFS) $(INCS) $< -o $@
 
 clean:
 	$(RM) $(OBJS)

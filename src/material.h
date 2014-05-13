@@ -1,86 +1,51 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
-
+#include <map>
 #include <string>
-#include <list>
+#include <glm/glm.hpp>
 
 class Texture;
 
-struct Material {
-	typedef std::list<Material*> List;
-	typedef List::iterator Iter;
 
-	Material(const std::string& n)
-	: name(n)
-	, diffuseTexture(NULL)
-	, specularWeight(0.f)
-//	, transparency(0.f)
-	, opticalDensity(0.f)
-	, illuminationModel(-1)
-	{ }
+class Material {
+public:
+	typedef std::map<std::string, Material*> Map;
+	typedef Map::const_iterator cIter;
+	typedef Map::iterator Iter;
 
-	void setTransparency(float t) {
-		ambient[3] = diffuse[3] = specular[3] = t;
-	}
+	class Element {
+	public:
+		Element();
+		~Element();
 
-	void apply() const {
-		glMaterialfv(GL_FRONT, GL_SPECULAR, ambient);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-		glMaterialfv(GL_FRONT, GL_AMBIENT, specular);
-		glMaterialf(GL_FRONT, GL_SHININESS, specularWeight);
-	}
+		// OpenGL bind color to texture so
+		// it must alsways be present
+		glm::vec4 color;
+		Texture* texture;
+	};
 
-	// Name of the material
+	Material();
+	~Material();
+
+	// Load textures and set transparency
+	void initialize();
+
+	// Select current material.
+	// Return true if texture is selected.
+	bool select() const;
+	// Disable textures
+	void unselect() const;
+
 	std::string name;
 
-	// The ambient color of the material is declared
-	// using Ka. Color definitions are in RGB where
-	// each channel's value is between 0 and 1
-	float ambient[4];
+	Element* emission;
+	Element* ambient;
+	Element* diffuse;
+	Element* specular;
 
-	// Similarly, the diffuse color is declared using Kd
-	float diffuse[4];
-	Texture* diffuseTexture;
-
-	// The specular color is declared using Ks, and
-	// weighted using the specular coefficient Ns
-	float specular[4];
-	float specularWeight;
-
-	// Materials can be transparent. This is referred
-	// to as being dissolved. Unlike real transparency,
-	// the result does not depend upon the thickness
-	// of the object.
-//	float transparency;
-
-	// Specifies the optical density for the surface.
-	// This is also known as index of refraction.
-	float opticalDensity;
-
-	// The illumination model to use in the material.
-	//
-	// 0   Color on and Ambient off
-	// 1   Color on and Ambient on
-	// 2   Highlight on
-	// 3   Reflection on and Ray trace on
-	// 4   Transparency: Glass on
-	//     Reflection: Ray trace on
-	// 5   Reflection: Fresnel on and Ray trace on
-	// 6   Transparency: Refraction on
-	//     Reflection: Fresnel off and Ray trace on
-	// 7   Transparency: Refraction on
-	//     Reflection: Fresnel on and Ray trace on
-	// 8   Reflection on and Ray trace off
-	// 9   Transparency: Glass on
-	//     Reflection: Ray trace off
-	// 10  Casts shadows onto invisible surfaces
-	int illuminationModel;
+	float* shininess;
+	float* transparency;
 };
 
 #endif // MATERIAL_H

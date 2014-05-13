@@ -1,90 +1,101 @@
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glut.h>
-#endif
-
-#include "model.h"
-#include <stdio.h>
-
-Model model;
+#include "scene.h"
 
 
-void initialize()
+Scene::~Scene()
 {
-	glMatrixMode(GL_PROJECTION);
-	glViewport(0, 0, 640, 480);
-	glLoadIdentity();
-	gluPerspective(45, 640.f / 480.f, 0.1, 100);
-	glMatrixMode(GL_MODELVIEW);
-
-	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-	glEnable(GL_DEPTH_TEST);
-
-	GLfloat insideLampPos[] = { 2.47, -4.07, 6.2, 0.0 };
-	GLfloat insideLampCol[] = { 1.0, 0.667, 0.362, 1.0 };
-
-	glLightfv(GL_LIGHT0, GL_POSITION, insideLampPos);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, insideLampCol);
-
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
-//	glShadeModel(GL_SMOOTH);
-
-	// Enable transparency
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
-
-	// Enable textures
-	glEnable(GL_TEXTURE_2D);
-}
-
-
-void display()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
-	gluLookAt(0, 2, 10,
-			  0, 2.8, 0,
-			  0, 1, 0);
-
-	model.draw();
-	glutSwapBuffers();
-}
-
-
-void keyboard(unsigned char key, int x, int y)
-{
-    // Escape
-	if (key == 27)
-		exit(0);
-}
-
-
-int main(int argc, char** argv)
-{
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowSize(640, 480);
-	glutCreateWindow("Obj");
-	glutDisplayFunc(display);
-	glutKeyboardFunc(keyboard);
-
-	initialize();
-	try {
-		model.load("../res/starter_file.obj");
+	Light::Iter li = lights.begin();
+	for (; li != lights.end(); ++li) {
+		delete *li;
 	}
-	catch (const std::exception& e) {
-		fprintf(stderr, "error: %s\n", e.what());
-		return 1;
+	Geometry::Iter gi = geometries.begin();
+	for (; gi != geometries.end(); ++gi) {
+		delete *gi;
+	}
+	Material::Iter mi = materials.begin();
+	for (; mi != materials.end(); ++mi) {
+		delete mi->second;
+	}
+}
+
+
+void Scene::initialize()
+{
+	camera.initialize();
+
+	if (lights.size()) {
+		glEnable(GL_LIGHTING);
+
+		Light::Iter li = lights.begin();
+		for (; li != lights.end(); ++li) {
+			(*li)->initialize();
+			(*li)->enable();
+		}
 	}
 
-	glutMainLoop();
+	Material::Iter mi = materials.begin();
+	for (; mi != materials.end(); ++mi) {
+		mi->second->initialize();
+	}
 
-	return 0;
+	// Sort geometries by transparency.
+	// Transparent objects has to be sorted in how
+	// close they are to the camera. This is a
+	// simple sort for our scene.
+	Geometry::List transparent;
+	Geometry::Iter gi = geometries.begin();
+	while (gi != geometries.end()) {
+		//(*gi)->initialize();
+		Material* m = (*gi)->material;
+		if (m && m->transparency) {
+			transparent.push_back(*gi);
+			gi = geometries.erase(gi);
+		}
+		else ++gi;
+	}
+	geometries.insert(geometries.end(),
+		transparent.begin(), transparent.end());
+}
+
+
+void Scene::draw() const
+{
+	camera.draw();
+
+	Light::cIter li = lights.begin();
+	for (; li != lights.end(); ++li) {
+		(*li)->draw();
+	}
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+
+	Geometry::cIter gi = geometries.begin();
+	for (; gi != geometries.end(); ++gi) {
+		(*gi)->draw();
+	}
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+}
+
+
+Object* Scene::getByName(const std::string& name)
+{
+	if (camera.name == name)
+		return &camera;
+	// Check lights
+	Light::Iter li = lights.begin();
+	for (; li != lights.end(); ++li) {
+		if ((*li)->name == name)
+			return *li;
+	}
+	// Check geometries
+	Geometry::Iter gi = geometries.begin();
+	for (; gi != geometries.end(); ++gi) {
+		if ((*gi)->name == name)
+			return *gi;
+	}
+	// Not found
+	return NULL;
 }
 

@@ -1,12 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#else
 #include <GL/gl.h>
-#endif
-
 #include <string>
 #include <list>
 
@@ -31,11 +26,12 @@ public:
 	typedef List::const_iterator cIter;
 	typedef List::iterator Iter;
 
-	void load(const std::string& fname) const;// throw (TextureException);
+	std::string filename;
 
-	void select() const {
-		glBindTexture(GL_TEXTURE_2D, handle);
-	}
+	void load();
+
+	// Select/Unselect the texture
+	void select(bool en = true) const;
 
 	Texture() {
 		glGenTextures(1, &handle);
@@ -48,5 +44,5 @@ private:
 	GLuint handle;
 };
 
-
 #endif // TEXTURE_H
+
