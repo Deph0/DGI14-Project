@@ -2,8 +2,14 @@ CC = g++
 CFLAGS = -c -Wall -ggdb
 INCS = -I../lib
 DEFS = -DRESOURCE_PATH="\"../res/\""
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+LDFLAGS = -L../lib/pugixml -framework GLUT -framework OpenGL
+LIBS = -lSOIL -lpugixml
+else
 LDFLAGS = -L../lib/pugixml -L../lib/SOIL
 LIBS = -lGL -lglut -lGLU -lSOIL -lpugixml
+endif
 TARGET = rainyday
 SRCS = \
 object.cpp \

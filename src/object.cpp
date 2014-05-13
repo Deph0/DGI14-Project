@@ -1,5 +1,5 @@
 #include "object.h"
-#include <GL/gl.h>
+#include "opengl.h"
 
 
 Object::Object()

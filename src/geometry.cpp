@@ -1,6 +1,6 @@
 #include "geometry.h"
 #include "material.h"
-#include <GL/gl.h>
+#include "opengl.h"
 
 
 void Geometry::draw() const

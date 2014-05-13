@@ -1,6 +1,6 @@
 #include "material.h"
 #include "texture.h"
-#include <GL/gl.h>
+#include "opengl.h"
 
 
 Material::Material()

@@ -1,7 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <GL/gl.h>
+#include "opengl.h"
 #include <string>
 #include <list>
 

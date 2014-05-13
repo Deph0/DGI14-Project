@@ -1,6 +1,6 @@
 #include "app.h"
 #include <stdio.h>
-#include <GL/glut.h>
+#include "opengl.h"
 #include "dae_model.h"
 #include "point_light.h"
 

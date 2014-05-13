@@ -1,5 +1,5 @@
 #include "light.h"
-#include <GL/glut.h>
+#include "opengl.h"
 
 GLenum Light::lightIndex = GL_LIGHT0;
 

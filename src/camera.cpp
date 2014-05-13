@@ -1,7 +1,5 @@
 #include "camera.h"
-#include <GL/gl.h>
-#include <GL/glut.h>
-
+#include "opengl.h"
 
 void Camera::setPerspective(int width, int height) const
 {
