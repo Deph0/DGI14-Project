@@ -45,7 +45,6 @@ void Material::initialize()
 	Element* elem[] = { emission, ambient, diffuse, specular };
 	int i = 0;
 
-//	diffuse->color = diffuse->color * 2.56;
 	for (; i < 4; i++) {
 		if (elem[i] == NULL)
 			continue;
@@ -55,7 +54,6 @@ void Material::initialize()
 			elem[i]->color.w = *transparency;
 		}
 	}
-//	ambient->color = specular->color;
 }
 
 
@@ -72,7 +70,6 @@ bool Material::select() const
 			continue;
 		glMaterialfv(sides, type[i], &elem[i]->color.x);
 		if (elem[i]->texture) {
-//printf("texture color (%f, %f, %f, %f)\n", elem[i]->color.x, elem[i]->color.y, elem[i]->color.z, elem[i]->color.w);
 			elem[i]->texture->select();
 			texturePresent = true;
 		}
