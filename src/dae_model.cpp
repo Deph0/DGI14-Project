@@ -43,8 +43,9 @@ void DaeModel::load(const std::string& fname, Scene* scene)
 			throw ModelException("can't find type of node");
 		ref = instance.attribute("url").value() + 1;
 		if (strcmp(instance.name() + 9, "camera") == 0) {
-			obj = &scene->camera;
+			obj = new Camera();
 			readCameraParams(doc, ref, (Camera*)obj);
+			scene->camera = (Camera*)obj;
 		}
 		else if (strcmp(instance.name() + 9, "light") == 0) {
 			obj = readLightParams(doc, ref);

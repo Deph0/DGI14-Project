@@ -10,11 +10,11 @@ RainScene::RainScene()
 
 void RainScene::on(GlutListener::Initialize)
 {
-	Camera* c = &scene.camera;
 	DaeModel loader;
 
 	loader.load(RESOURCE_PATH + std::string("starter_file.dae"), &scene);
 
+	Camera* c = scene.camera;
 	// LookAt not present in dae file
 	c->lookAt = glm::vec3(0, 0, 3);
 	// Blender sets very strange rotation by default
@@ -40,20 +40,20 @@ void RainScene::on(GlutListener::Initialize)
 
 void RainScene::on(GlutListener::Reshape, int width, int height)
 {
-	scene.camera.setPerspective(width, height);
+	scene.camera->setPerspective(width, height);
 }
 
 
 void RainScene::on(GlutListener::Display)
 {
 	scene.draw();
-	//raindrops.draw();
+	raindrops.draw();
 }
 
 
 void RainScene::on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y)
 {
-	Camera* c = &scene.camera;
+	Camera* c = scene.camera;
 	float speed = 0.1f;
 
 	switch (key) {
@@ -90,14 +90,14 @@ void RainScene::on(GlutListener::MouseButton, int button, int state, int x, int 
 	// Each wheel event reports like a button click, GLUT_DOWN then GLUT_UP
 	if (button == 3) {
 		// Scroll up
-		Camera* c = &scene.camera;
+		Camera* c = scene.camera;
 		const glm::vec3& dir = c->lookAt - c->position;
 		c->position = c->position + dir * 0.02f;
 		glutPostRedisplay();
 	}
 	else if (button == 4) {
 		// Scroll down
-		Camera* c = &scene.camera;
+		Camera* c = scene.camera;
 		const glm::vec3& dir = c->lookAt - c->position;
 		c->position = c->position - dir * 0.02f;
 		glutPostRedisplay();
@@ -107,7 +107,7 @@ void RainScene::on(GlutListener::MouseButton, int button, int state, int x, int 
 
 void RainScene::on(GlutListener::MouseMove, int x, int y)
 {
-	Camera* c = &scene.camera;
+	Camera* c = scene.camera;
 	float speed = 0.1f;
 
 	c->rotation.x.w = (mousePos.y - y) * speed;

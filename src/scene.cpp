@@ -1,6 +1,12 @@
 #include "scene.h"
 
 
+Scene::Scene()
+: camera(NULL)
+{
+}
+
+
 Scene::~Scene()
 {
 	Light::Iter li = lights.begin();
@@ -20,7 +26,8 @@ Scene::~Scene()
 
 void Scene::initialize()
 {
-	camera.initialize();
+	if (camera)
+		camera->initialize();
 
 	if (lights.size()) {
 		glEnable(GL_LIGHTING);
@@ -59,7 +66,8 @@ void Scene::initialize()
 
 void Scene::draw() const
 {
-	camera.draw();
+	if (camera)
+		camera->draw();
 
 	Light::cIter li = lights.begin();
 	for (; li != lights.end(); ++li) {
@@ -81,8 +89,8 @@ void Scene::draw() const
 
 Object* Scene::getByName(const std::string& name)
 {
-	if (camera.name == name)
-		return &camera;
+	if (camera && camera->name == name)
+		return camera;
 	// Check lights
 	Light::Iter li = lights.begin();
 	for (; li != lights.end(); ++li) {

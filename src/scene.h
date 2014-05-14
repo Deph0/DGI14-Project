@@ -18,12 +18,13 @@ public:
 
 	std::string name;
 
-	Camera camera;
+	Camera* camera;
 	Light::List lights;
 	Geometry::List geometries;
 
 	Material::Map materials;
 
+	Scene();
 	~Scene();
 };
 

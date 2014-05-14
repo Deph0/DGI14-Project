@@ -30,3 +30,41 @@ void Geometry::draw() const
 	glPopMatrix();
 }
 
+
+void Geometry::centerAtOrigin()
+{
+	// Find min and max of all vertices
+	glm::vec3 min(std::numeric_limits<float>::max());
+	glm::vec3 max(-std::numeric_limits<float>::max());
+	glm::vec3 cur;
+	size_t i = 0;
+
+	for (; i < vertices.size(); i += 3) {
+		cur.x = vertices.at(i);
+		cur.y = vertices.at(i + 1);
+		cur.z = vertices.at(i + 2);
+
+		if (cur.x < min.x)
+			min.x = cur.x;
+		if (cur.y < min.y)
+			min.y = cur.y;
+		if (cur.z < min.z)
+			min.z = cur.z;
+
+		if (cur.x > max.x)
+			max.x = cur.x;
+		if (cur.y > max.y)
+			max.y = cur.y;
+		if (cur.z > max.z)
+			max.z = cur.z;
+	}
+
+	// Translate all vertices
+	cur = (max + min) / 2.f;
+	for (i = 0; i < vertices.size(); i += 3) {
+		vertices[i] -= cur.x;
+		vertices[i + 1] -= cur.y;
+		vertices[i + 2] -= cur.z;
+	}
+}
+

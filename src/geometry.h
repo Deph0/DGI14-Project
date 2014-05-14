@@ -20,6 +20,9 @@ public:
 
 	void draw() const;
 
+	// Recalculate vertices to center object at (0, 0, 0)
+	void centerAtOrigin();
+
 	std::vector<float> vertices;
 	std::vector<float> normals;
 	std::vector<float> texels;
