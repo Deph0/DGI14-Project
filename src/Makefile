@@ -24,7 +24,9 @@ dae_model.cpp \
 obj_model.cpp \
 scene.cpp \
 util.cpp \
-app.cpp
+rain_drops.cpp \
+rain_scene.cpp \
+rainy_day.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(SRCS) $(TARGET)
