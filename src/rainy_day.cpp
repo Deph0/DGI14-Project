@@ -35,8 +35,8 @@ void RainyDay::initialize()
 	glEnable(GL_NORMALIZE);
 
 	// Enable transparency
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Enable textures
 	glEnable(GL_TEXTURE_2D);

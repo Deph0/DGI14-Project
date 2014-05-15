@@ -43,24 +43,6 @@ void Scene::initialize()
 	for (; mi != materials.end(); ++mi) {
 		mi->second->initialize();
 	}
-
-	// Sort geometries by transparency.
-	// Transparent objects has to be sorted in how
-	// close they are to the camera. This is a
-	// simple sort for our scene.
-	Geometry::List transparent;
-	Geometry::Iter gi = geometries.begin();
-	while (gi != geometries.end()) {
-		//(*gi)->initialize();
-		Material* m = (*gi)->material;
-		if (m && m->transparency) {
-			transparent.push_back(*gi);
-			gi = geometries.erase(gi);
-		}
-		else ++gi;
-	}
-	geometries.insert(geometries.end(),
-		transparent.begin(), transparent.end());
 }
 
 
@@ -74,34 +56,40 @@ void Scene::draw() const
 		(*li)->draw();
 	}
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-
 	Geometry::cIter gi = geometries.begin();
 	for (; gi != geometries.end(); ++gi) {
 		(*gi)->draw();
 	}
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
 }
 
 
-Object* Scene::getByName(const std::string& name)
+Object* Scene::getByName(const std::string& name, bool erase)
 {
-	if (camera && camera->name == name)
-		return camera;
+	if (camera && camera->name == name) {
+		Camera* obj = camera;
+		if (erase)
+			camera = NULL;
+		return obj;
+	}
 	// Check lights
 	Light::Iter li = lights.begin();
 	for (; li != lights.end(); ++li) {
-		if ((*li)->name == name)
-			return *li;
+		if ((*li)->name == name) {
+			Light* obj = *li;
+			if (erase)
+				lights.erase(li);
+			return obj;
+		}
 	}
 	// Check geometries
 	Geometry::Iter gi = geometries.begin();
 	for (; gi != geometries.end(); ++gi) {
-		if ((*gi)->name == name)
-			return *gi;
+		if ((*gi)->name == name) {
+			Geometry* obj = *gi;
+			if (erase)
+				geometries.erase(gi);
+			return obj;
+		}
 	}
 	// Not found
 	return NULL;

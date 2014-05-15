@@ -14,7 +14,7 @@ public:
 	void draw() const;
 
 	// Return NULL if not found
-	Object* getByName(const std::string& name);
+	Object* getByName(const std::string& name, bool erase = false);
 
 	std::string name;
 

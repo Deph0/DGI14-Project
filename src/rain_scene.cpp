@@ -1,10 +1,18 @@
 #include "rain_scene.h"
 #include "dae_model.h"
 #include "point_light.h"
+#include <glm/gtx/rotate_vector.hpp>
 
 
 RainScene::RainScene()
+: glass(NULL)
 {
+}
+
+
+RainScene::~RainScene()
+{
+	delete glass;
 }
 
 
@@ -33,7 +41,16 @@ void RainScene::on(GlutListener::Initialize)
 		plane->material->diffuse->color = glm::vec4(2.f);
 	}
 
+	// Initialize the main scene
 	scene.initialize();
+	// Pick out the window glass to be drawn last because
+	// of it's transparency
+	glass = (Geometry*)scene.getByName("Glass", true);
+	// Set plain where drops will appear
+	glm::vec3 min, max;
+	glass->getMinMax(&min, &max);
+	raindrops.setDrawingPlane(min, max);
+	// Initialize the raindrops
 	raindrops.initialize();
 }
 
@@ -48,6 +65,7 @@ void RainScene::on(GlutListener::Display)
 {
 	scene.draw();
 	raindrops.draw();
+	glass->draw();
 }
 
 
@@ -55,6 +73,8 @@ void RainScene::on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y
 {
 	Camera* c = scene.camera;
 	float speed = 0.1f;
+
+	bool ctrl = glutGetModifiers() & GLUT_ACTIVE_CTRL;
 
 	switch (key) {
 	case GLUT_KEY_UP:
@@ -64,10 +84,16 @@ void RainScene::on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y
 		c->position.z -= speed;
 		break;
 	case GLUT_KEY_LEFT:
-		c->position.x -= speed;
+		if (ctrl)
+			c->rotation.z.w += 1.f;
+		else
+			c->position.x -= speed;
 		break;
 	case GLUT_KEY_RIGHT:
-		c->position.x += speed;
+		if (ctrl)
+			c->rotation.z.w -= 1.f;
+		else
+			c->position.x += speed;
 		break;
 	default:
 		return;

@@ -27,7 +27,6 @@ Material::~Material()
 
 Material::Element::Element()
 // Set default color to white without transparency
-//: color(0.64, 0.64, 0.64, 1.f)
 : color(1.f)
 , texture(NULL)
 {

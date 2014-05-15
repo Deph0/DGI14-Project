@@ -11,8 +11,15 @@ public:
 	void initialize();
 	void draw() const;
 
+	void setDrawingPlane(const glm::vec3& min, const glm::vec3& max) {
+		planeMin = min;
+		planeMax = max;
+	}
+
 private:
 	Scene scene;
+	glm::vec3 planeMin;
+	glm::vec3 planeMax;
 };
 
 #endif // RAIN_DROPS_H

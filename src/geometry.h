@@ -22,6 +22,8 @@ public:
 
 	// Recalculate vertices to center object at (0, 0, 0)
 	void centerAtOrigin();
+	// Get min and max coordinates of the geometry
+	void getMinMax(glm::vec3* min, glm::vec3* max) const;
 
 	std::vector<float> vertices;
 	std::vector<float> normals;

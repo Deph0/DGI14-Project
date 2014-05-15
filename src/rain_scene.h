@@ -9,6 +9,7 @@
 class RainScene : public GlutListener {
 public:
 	RainScene();
+	~RainScene();
 
 private:
 	void on(GlutListener::Initialize);
@@ -21,6 +22,7 @@ private:
 	Scene scene;
 	RainDrops raindrops;
 	glm::ivec2 mousePos;
+	Geometry* glass;
 };
 
 #endif // RAIN_SCENE_H
