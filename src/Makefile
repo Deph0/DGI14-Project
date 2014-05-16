@@ -1,14 +1,14 @@
 CC = g++
 CFLAGS = -c -Wall -ggdb
 INCS = -I../lib
-DEFS = -DRESOURCE_PATH="\"../res/\""
+DEFS =
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
 LDFLAGS = -L../lib/pugixml -framework GLUT -framework OpenGL
 LIBS = -lSOIL -lpugixml
 else
 LDFLAGS = -L../lib/pugixml -L../lib/SOIL
-LIBS = -lGL -lglut -lGLU -lSOIL -lpugixml
+LIBS = -lGL -lglut -lGLU -lGLEW -lSOIL -lpugixml
 endif
 TARGET = rainyday
 SRCS = \
@@ -24,6 +24,8 @@ dae_model.cpp \
 obj_model.cpp \
 scene.cpp \
 util.cpp \
+shader.cpp \
+shader_program.cpp \
 rain_drops.cpp \
 rain_scene.cpp \
 rainy_day.cpp

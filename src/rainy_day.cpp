@@ -27,10 +27,6 @@ void RainyDay::initialize()
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 
-	// Enable antialiasing (if supported)
-	glEnable(GL_MULTISAMPLE);
-	glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
-
 	// Normalize normals
 	glEnable(GL_NORMALIZE);
 
@@ -95,9 +91,17 @@ void RainyDay::mouseMove(int x, int y)
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(640, 480);
 	glutCreateWindow("DGI14 Project - Rainy Window");
+
+	glewInit();
+	if (glewIsSupported("GL_VERSION_2_0"))
+		printf("ready for OpenGL 2.0\n");
+	if (!GLEW_ARB_vertex_shader || !GLEW_ARB_fragment_shader) {
+		fprintf(stderr, "error: shaders are not suppotted\n");
+		return 1;
+	}
 
 	try {
 		RainyDay::getInstance()->initialize();

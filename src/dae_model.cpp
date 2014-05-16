@@ -166,7 +166,8 @@ void DaeModel::readMaterials(const pugi::xml_document& doc, Material::Map* lst)
 					throw ModelException(
 						"failed to get texture filename for " + cur->name);
 				}
-				elem->texture->filename = RESOURCE_PATH + util::unescape(str);
+				elem->texture->filename =
+					util::resource_path(util::unescape(str));
 			}
 			else { // This is a color
 				if (sscanf(val, "%f %f %f %f",

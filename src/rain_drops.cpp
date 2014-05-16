@@ -1,5 +1,6 @@
 #include "rain_drops.h"
 #include "obj_model.h"
+#include "util.h"
 
 
 RainDrops::RainDrops()
@@ -11,7 +12,7 @@ void RainDrops::initialize()
 {
 	ObjModel loader;
 
-	loader.load(RESOURCE_PATH + std::string("raindrops.obj"), &scene);
+	loader.load(util::resource_path("raindrops.obj"), &scene);
 	scene.initialize();
 
 	const glm::vec3& center = (planeMin + planeMax) / 2.f;
@@ -22,14 +23,22 @@ void RainDrops::initialize()
 		(*i)->position = center;
 		(*i)->rotation.x.w = -90.f;
 		(*i)->rotation.y.w = -90.f;
+		(*i)->scaling = glm::vec3(0.5f);
 	}
+
+	glass.createShader(GL_VERTEX_SHADER_ARB)->load(
+		util::shader_path("raindrop.vert"));
+	glass.createShader(GL_FRAGMENT_SHADER_ARB)->load(
+		util::shader_path("raindrop.frag"));
+	glass.initialize();
 }
 
 
 void RainDrops::draw() const
 {
 	Geometry* g = *(++scene.geometries.begin());
+	glass.begin();
 	g->draw();
-//	scene.draw();
+	glass.end();
 }
 

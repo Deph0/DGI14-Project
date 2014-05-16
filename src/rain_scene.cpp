@@ -1,6 +1,7 @@
 #include "rain_scene.h"
 #include "dae_model.h"
 #include "point_light.h"
+#include "util.h"
 #include <glm/gtx/rotate_vector.hpp>
 
 
@@ -20,7 +21,7 @@ void RainScene::on(GlutListener::Initialize)
 {
 	DaeModel loader;
 
-	loader.load(RESOURCE_PATH + std::string("starter_file.dae"), &scene);
+	loader.load(util::resource_path("starter_file.dae"), &scene);
 
 	Camera* c = scene.camera;
 	// LookAt not present in dae file
@@ -36,6 +37,9 @@ void RainScene::on(GlutListener::Initialize)
 	if (lamp) {
 		lamp->color = lamp->color * 7.f;
 	}
+//	PointLight* sun = (PointLight*)scene.getByName("SunLamp");
+//	if (sun)
+//		sun->position.x += 4.f;
 	Geometry* plane = (Geometry*)scene.getByName("BkgndPlane");
 	if (plane) {
 		plane->material->diffuse->color = glm::vec4(2.f);

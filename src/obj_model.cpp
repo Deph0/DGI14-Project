@@ -39,7 +39,7 @@ void ObjModel::load(const std::string& fname, Scene* scene)
 		// Material library
 		else if (strncmp(cline, "mtllib ", 7) == 0) {
 			loadMaterials(
-				RESOURCE_PATH + std::string(cline + 7), &scene->materials);
+				util::resource_path(cline + 7), &scene->materials);
 		}
 		// Material to use
 		else if (strncmp(cline, "usemtl ", 7) == 0) {
@@ -171,7 +171,7 @@ void ObjModel::loadMaterials(const std::string& fname, Material::Map* lst)
 				img = cline + 7;
 			}
 			Texture* t = new Texture();
-			t->filename = RESOURCE_PATH + std::string(img);
+			t->filename = util::resource_path(img);
 			(*el)->texture = t;
 		}
 		else if (sscanf(cline, "K%c %f %f %f", &type, &r, &g, &b) == 4) {

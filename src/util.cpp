@@ -1,6 +1,7 @@
 #include "util.h"
 #include <sstream>
 #include <stdio.h>
+#include <stdarg.h>
 
 
 namespace util {
@@ -52,6 +53,31 @@ std::string unescape(const std::string& str)
 	}
 
 	return out;
+}
+
+
+std::string format(const char* fmt, ...)
+{
+	va_list ap;
+	std::string out(512, 0);
+
+	va_start(ap, fmt);
+	vsnprintf(&out[0], out.size(), fmt, ap);
+	va_end(ap);
+
+	return out;
+}
+
+
+std::string resource_path(const std::string& str)
+{
+	return "../res/" + str;
+}
+
+
+std::string shader_path(const std::string& str)
+{
+	return "../shaders/" + str;
 }
 
 } // namespace Util

@@ -2,6 +2,7 @@
 #define RAIN_DROPS_H
 
 #include "scene.h"
+#include "shader_program.h"
 
 
 class RainDrops : public Drawable {
@@ -20,6 +21,7 @@ private:
 	Scene scene;
 	glm::vec3 planeMin;
 	glm::vec3 planeMax;
+	ShaderProgram glass;
 };
 
 #endif // RAIN_DROPS_H

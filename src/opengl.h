@@ -1,6 +1,8 @@
 #ifndef OPENGL_H
 #define OPENGL_H
 
+#define GLEW_STATIC
+
 #ifdef __APPLE__ // Defined on Mac OS X
 
 #include <OpenGL/gl.h>
@@ -8,7 +10,7 @@
 #include <GLUT/glut.h>
 
 #elif __linux__ // Defined on Linux
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/glut.h>
 
 #elif _WIN32
