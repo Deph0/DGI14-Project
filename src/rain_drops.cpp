@@ -17,14 +17,13 @@ void RainDrops::initialize()
 	loader.load(util::resource_path("raindrops.obj"), &scene);
 	scene.initialize();
 
-	//const glm::vec3& center = (plane.min + plane.max) / 2.f;
+//	const glm::vec3& center = (plane.min + plane.max) / 2.f;
 	// Relocate
 	Geometry::Iter i = scene.geometries.begin();
 	for (; i != scene.geometries.end(); ++i) {
 		(*i)->centerAtOrigin();
-		//(*i)->position = center;
-		(*i)->rotation.x.w = -90.f;
-		(*i)->rotation.y.w = -90.f;
+//		(*i)->position = center;
+//		(*i)->rotation.z.w = 180.f;
 		(*i)->scaling = glm::vec3(0.06f);
 	}
 
@@ -70,6 +69,7 @@ void RainDrops::draw() const
 	Particle::cIter i = drops.begin();
 
 	shaders.begin();
+	//scene.geometries.at(rand() % scene.geometries.size())->draw();
 	for (; i != drops.end(); ++i) {
 		i->mesh->position = i->position;
 		i->mesh->draw();
