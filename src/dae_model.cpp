@@ -2,6 +2,7 @@
 #include "util.h"
 #include "texture.h"
 #include "point_light.h"
+#include "exception.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -25,7 +26,7 @@ void DaeModel::load(const std::string& fname, Scene* scene)
 	Object* obj;
 
 	if (!result)
-		throw ModelException(result.description());
+		throw Exception(result.description());
 
 	// Load materials
 	readMaterials(doc, &scene->materials);
@@ -33,14 +34,14 @@ void DaeModel::load(const std::string& fname, Scene* scene)
 	// Go throw objects in the scene
 	node = doc.select_single_node("//visual_scene").node();
 	if (node.empty())
-		throw ModelException("no scene present");
+		throw Exception("no scene present");
 	scene->name = node.attribute("name").value();
 	pugi::xml_node_iterator ni = node.begin();
 	for (; ni != node.end(); ++ni) {
 		// Find type
 		instance = ni->last_child();
 		if (strncmp(instance.name(), "instance_", 9) != 0)
-			throw ModelException("can't find type of node");
+			throw Exception("can't find type of node");
 		ref = instance.attribute("url").value() + 1;
 		if (strcmp(instance.name() + 9, "camera") == 0) {
 			obj = new Camera();
@@ -94,11 +95,11 @@ void DaeModel::readMaterials(const pugi::xml_document& doc, Material::Map* lst)
 		effect = doc.select_single_node(
 			("//library_effects/effect[@id='" + id + "']").c_str()).node();
 		if (effect.empty())
-			throw ModelException("missing parameters for material, id " + id);
+			throw Exception("missing parameters for material, id " + id);
 		phong = effect.select_single_node(
 			"profile_COMMON/technique/phong").node();
 		if (phong.empty())
-			throw ModelException("missing common parameters for material, id " + id);
+			throw Exception("missing common parameters for material, id " + id);
 		pugi::xml_node_iterator it = phong.begin();
 		for (; it != phong.end(); ++it) {
 			type = it->first_child();
@@ -163,7 +164,7 @@ void DaeModel::readMaterials(const pugi::xml_document& doc, Material::Map* lst)
 					"']/init_from").c_str()).node();
 				str = type.text().get();
 				if (str.empty()) {
-					throw ModelException(
+					throw Exception(
 						"failed to get texture filename for " + cur->name);
 				}
 				elem->texture->filename =
@@ -173,7 +174,7 @@ void DaeModel::readMaterials(const pugi::xml_document& doc, Material::Map* lst)
 				if (sscanf(val, "%f %f %f %f",
 					&elem->color.r, &elem->color.g, &elem->color.b, &elem->color.w) != 4)
 				{
-					throw ModelException("failed to read material parameter " + \
+					throw Exception("failed to read material parameter " + \
 						str + ", id " + cur->name);
 				}
 			}
@@ -205,7 +206,7 @@ void DaeModel::readObjectParams(const pugi::xml_node& node, Object* obj)
 			if (sscanf(it->text().get(), "%f %f %f %f",
 				&v4->x, &v4->y, &v4->z, &v4->w) != 4)
 			{
-				throw ModelException("missing parameters for camera in " + str);
+				throw Exception("missing parameters for camera in " + str);
 			}
 			continue;
 		}
@@ -216,7 +217,7 @@ void DaeModel::readObjectParams(const pugi::xml_node& node, Object* obj)
 		else continue;
 
 		if (sscanf(it->text().get(), "%f %f %f", &v3->x, &v3->y, &v3->z) != 3)
-			throw ModelException("missing parameters for camera in " + str);
+			throw Exception("missing parameters for camera in " + str);
 	}
 }
 
@@ -230,7 +231,7 @@ void DaeModel::readCameraParams(
 	node = doc.select_single_node(("//camera[@id='" + ref + \
 		"']/optics/technique_common/perspective").c_str()).node();
 	if (node.empty())
-		throw ModelException("missing camera settings for id " + ref);
+		throw Exception("missing camera settings for id " + ref);
 
 	camera->fov = node.child("xfov").text().as_float(45.f);
 	camera->zNear = node.child("znear").text().as_float(0.1);
@@ -242,7 +243,7 @@ void DaeModel::readCameraParams(
 	if (str == "Z_UP")
 		camera->upAxis.z = 1.f;
 	else
-		throw ModelException("unknown camera up axes [" + str + "] for id " + ref);
+		throw Exception("unknown camera up axes [" + str + "] for id " + ref);
 }
 
 
@@ -252,31 +253,31 @@ Light* DaeModel::readLightParams(
 	pugi::xml_node node = doc.select_single_node(
 		("//light[@id='" + ref + "']/technique_common").c_str()).node().first_child();
 	if (node.empty())
-		throw ModelException("missing light settings for id " + ref);
+		throw Exception("missing light settings for id " + ref);
 	if (strcmp(node.name(), "point") != 0)
-		throw ModelException("light type [" + std::string(node.name()) + "] is not supported yet");
+		throw Exception(util::format("light type [%s] is not supported yet", node.name()));
 
 	PointLight point;
 
 	if (sscanf(node.child("color").text().get(), "%f %f %f",
 		&point.color.r, &point.color.g, &point.color.b) != 3)
 	{
-		throw ModelException("failed to get light color, id " + ref);
+		throw Exception("failed to get light color, id " + ref);
 	}
 	if (sscanf(node.child("constant_attenuation").text().get(), "%f",
 		&point.attenuation.constant) != 1)
 	{
-		throw ModelException("missing constant attenuation for light " + ref);
+		throw Exception("missing constant attenuation for light " + ref);
 	}
 	if (sscanf(node.child("linear_attenuation").text().get(), "%f",
 		&point.attenuation.linear) != 1)
 	{
-		throw ModelException("missing linear attenuation for light " + ref);
+		throw Exception("missing linear attenuation for light " + ref);
 	}
 	if (sscanf(node.child("quadratic_attenuation").text().get(), "%f",
 		&point.attenuation.quadratic) != 1)
 	{
-		throw ModelException("missing quadratic attenuation for light " + ref);
+		throw Exception("missing quadratic attenuation for light " + ref);
 	}
 
 	return new PointLight(point);
@@ -295,7 +296,7 @@ void DaeModel::readGeometryParams(
 	mesh = doc.select_single_node(
 		("//geometry[@id='" + ref + "']/mesh").c_str()).node();
 	if (mesh.empty())
-		throw ModelException("missing geometry settings for id " + ref);
+		throw Exception("missing geometry settings for id " + ref);
 
 	node = mesh.child("polylist");
 	// Select material
@@ -306,7 +307,7 @@ void DaeModel::readGeometryParams(
 		str = subnode.attribute("name").value();
 		Material::cIter i = lst->find(str);
 		if (i == lst->end())
-			throw ModelException("can't find material [" + str + "] for geometry");
+			throw Exception("can't find material [" + str + "] for geometry");
 		g->material = i->second;
 	}
 	// Set geometries
@@ -342,26 +343,26 @@ void DaeModel::readGeometryParams(
 			subnode = mesh.select_single_node(
 				("vertices[@id='" + id + "']/input").c_str()).node();
 			if (!subnode)
-				throw ModelException("missing geometry vertices info, id " + ref);
+				throw Exception("missing geometry vertices info, id " + ref);
 			id = subnode.attribute("source").value() + 1;
 			subnode = mesh.select_single_node(
 				("source[@id='" + id + "']/float_array").c_str()).node();
 			if (subnode.empty())
-				throw ModelException("missing geometry vertices data, id " + ref);
+				throw Exception("missing geometry vertices data, id " + ref);
 			putIn = &vertices;
 		}
 		else if (str == "NORMAL") {
 			subnode = mesh.select_single_node(
 				("source[@id='" + id + "']/float_array").c_str()).node();
 			if (subnode.empty())
-				throw ModelException("missing geometry normals data, id " + ref);
+				throw Exception("missing geometry normals data, id " + ref);
 			putIn = &normals;
 		}
 		else if (str == "TEXCOORD") {
 			subnode = mesh.select_single_node(
 				("source[@id='" + id + "']/float_array").c_str()).node();
 			if (subnode.empty())
-				throw ModelException(
+				throw Exception(
 					"missing geometry texture coordinates data, id " + ref);
 			putIn = &texels;
 		}

@@ -1,0 +1,8 @@
+#ifndef SETTINGS_H
+#define SETTINGS_H
+
+#define MAX_NR_DROPS 200
+#define DROPS_SPREADING_FACTOR 1000
+
+#endif // SETTINGS_H
+

@@ -6,20 +6,6 @@
 #include <list>
 
 
-class TextureException : public std::exception {
-public:
-	TextureException(const std::string& m)
-	: msg(m)
-	{ }
-	virtual ~TextureException() throw() { }
-	virtual const char* what() const throw() {
-		return msg.c_str();
-	}
-private:
-	std::string msg;
-};
-
-
 class Texture {
 public:
 	typedef std::list<Texture*> List;

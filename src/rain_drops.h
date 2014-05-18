@@ -12,16 +12,32 @@ public:
 	void initialize();
 	void draw() const;
 
-	void setDrawingPlane(const glm::vec3& min, const glm::vec3& max) {
-		planeMin = min;
-		planeMax = max;
+	void setDrawingPlane(const Geometry* g) {
+		g->getMinMax(&plane.min, &plane.max, true);
 	}
 
 private:
+	void createDrops(size_t cnt);
+
+	struct Rect {
+		glm::vec3 randomize(int accuracy) const;
+
+		glm::vec3 min;
+		glm::vec3 max;
+	} plane;
+
+	struct Particle {
+		typedef std::list<Particle> List;
+		typedef List::const_iterator cIter;
+		typedef List::iterator Iter;
+
+		Geometry* mesh;
+		glm::vec3 position;
+	};
+
 	Scene scene;
-	glm::vec3 planeMin;
-	glm::vec3 planeMax;
-	ShaderProgram glass;
+	Particle::List drops;
+	ShaderProgram shaders;
 };
 
 #endif // RAIN_DROPS_H

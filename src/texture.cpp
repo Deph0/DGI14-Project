@@ -1,4 +1,5 @@
 #include "texture.h"
+#include "exception.h"
 #include <SOIL/SOIL.h>
 #include <stdio.h>
 
@@ -8,7 +9,7 @@ void Texture::load()
 	handle = SOIL_load_OGL_texture(
 		filename.c_str(), 3, 0, SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_INVERT_Y);
 	if (handle == 0) {
-		throw TextureException("failed to load texture image " + filename + \
+		throw Exception("failed to load texture image " + filename + \
 			", " + SOIL_last_result());
 	}
 }
