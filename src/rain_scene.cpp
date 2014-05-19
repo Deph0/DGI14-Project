@@ -68,6 +68,12 @@ void RainScene::on(GlutListener::Display)
 }
 
 
+void RainScene::on(GlutListener::Idle)
+{
+	raindrops.animate();
+}
+
+
 void RainScene::on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y)
 {
 	Camera* c = scene.camera;

@@ -29,6 +29,8 @@ std::string unescape(const std::string& str);
 
 std::string format(const char* fmt, ...);
 
+float in_range(float low, float high, float resolution);
+
 // Append default resource path in the beginning of the string
 std::string resource_path(const std::string& str);
 // Append default shader path in the beginning of the string

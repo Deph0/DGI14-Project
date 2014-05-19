@@ -12,6 +12,7 @@ void RainyDay::initialize()
 {
 	glutDisplayFunc(RainyDay::display);
 	glutReshapeFunc(RainyDay::reshape);
+	glutIdleFunc(RainyDay::idle);
 	glutKeyboardFunc(RainyDay::keyDown);
 	glutSpecialFunc(RainyDay::specialKeyDown);
 	// Process mouse button push/release
@@ -58,6 +59,12 @@ void RainyDay::display()
 	RainyDay::getInstance()->fire(GlutListener::Display());
 
 	glutSwapBuffers();
+}
+
+
+void RainyDay::idle()
+{
+	RainyDay::getInstance()->fire(GlutListener::Idle());
 }
 
 
