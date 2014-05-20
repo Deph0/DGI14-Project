@@ -16,7 +16,7 @@ public:
 	virtual void on(Initialize) { }
 	virtual void on(Reshape, int width, int height) { }
 	virtual void on(Display) { }
-	virtual void on(Idle) { }
+	virtual void on(Idle, int deltaTime) { }
 	virtual void on(KeyDown, unsigned char key, int x, int y) { }
 	virtual void on(SpecialKeyDown, unsigned char key, int x, int y) { }
 	virtual void on(MouseButton, int button, int state, int x, int y) { }

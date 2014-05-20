@@ -1,5 +1,6 @@
 #include "opengl.h"
 #include "rainy_day.h"
+#include "settings.h"
 
 
 RainyDay::RainyDay()
@@ -64,7 +65,14 @@ void RainyDay::display()
 
 void RainyDay::idle()
 {
-	RainyDay::getInstance()->fire(GlutListener::Idle());
+	static int prevTime = glutGet(GLUT_ELAPSED_TIME);
+	int dt = glutGet(GLUT_ELAPSED_TIME) - prevTime;
+
+	if (dt < (1000.f / FRAMES_PER_SECOND))
+		return;
+
+	RainyDay::getInstance()->fire(GlutListener::Idle(), dt);
+	prevTime += dt;
 }
 
 

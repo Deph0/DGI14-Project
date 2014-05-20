@@ -7,6 +7,7 @@
 
 RainScene::RainScene()
 : glass(NULL)
+, fps(0.f)
 {
 }
 
@@ -68,9 +69,11 @@ void RainScene::on(GlutListener::Display)
 }
 
 
-void RainScene::on(GlutListener::Idle)
+void RainScene::on(GlutListener::Idle, int deltaTime)
 {
+	fps = 1000.f / deltaTime;
 	raindrops.animate();
+printf("fps: %4.2f \r", fps);
 }
 
 

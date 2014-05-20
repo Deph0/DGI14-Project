@@ -5,6 +5,12 @@
 
 
 RainDrops::RainDrops()
+: collision(10.f)
+{
+}
+
+
+RainDrops::~RainDrops()
 {
 }
 
@@ -23,7 +29,7 @@ void RainDrops::initialize()
 		(*i)->centerAtOrigin();
 //		(*i)->position = center;
 //		(*i)->rotation.z.w = 180.f;
-		(*i)->scaling = glm::vec3(0.04f);
+//		(*i)->scaling = glm::vec3(0.04f);
 	}
 
 //	createDrops(MAX_NR_DROPS);
@@ -53,10 +59,10 @@ glm::vec3 RainDrops::Rect::randomize(int accuracy) const
 
 void RainDrops::Particle::newDirection()
 {
-	// x spreading in range -0.4 - 0.4
+	// x spreading in range -0.2 - 0.2
 	direction.x = util::in_range(-0.2f, 0.2f, 100.f);
 	direction.y = 0.f;
-	// z spreading in range -0.1 - -0.6
+	// z spreading in range -0.6 - -0.1
 	direction.z = util::in_range(-0.6f, -0.1f, 10.f);
 	distance = 0.f;
 	newSpeed();
@@ -66,16 +72,41 @@ void RainDrops::Particle::newDirection()
 
 void RainDrops::Particle::newSpeed()
 {
-	// speed is in range 0.1 - 0.02
 	if (rand() & 1)
-		speed = (rand() % 81) / 1000.f + 0.02f;
+		speed = util::in_range(0.02f, 0.1f, 100.f);
 	else {
 		speed = 0.f;
 		moveAfterFrames = rand() % 100 + 1;
 	}
-//	speed = 0.05f;
 }
 
+
+void RainDrops::CollisionMap::set(const glm::vec3& pos, RainDrops::Particle* p)
+{
+	int x = round(pos.x * factor);
+	int y = round(pos.z * factor);
+
+	map[y][x] = p;
+//	map[glm::ivec2(int(pos.x * factor), int(pos.z * factor))] = p;
+}
+
+
+RainDrops::Particle* RainDrops::CollisionMap::get(const glm::vec3& pos)
+{
+	int x = round(pos.x * factor);
+	int y = round(pos.z * factor);
+
+	Map::iterator mi = map.find(y);
+	if (mi == map.end())
+		return NULL;
+	SubMap::iterator si = mi->second.find(x);
+	if (si == mi->second.end())
+		return NULL;
+	return si->second;
+}
+
+//	factor = (plane->max - plane->min) / (float)resolution;
+//	const glm::vec3& t = (pos - plane->min) / factor;
 
 void RainDrops::createDrops(size_t cnt)
 {
@@ -87,7 +118,11 @@ void RainDrops::createDrops(size_t cnt)
 		drop.position = plane.randomize(DROPS_SPREADING_FACTOR);
 		drop.newDirection();
 		// Only specified percentage of drops should have path trace
-		drop.showPath = (rand() % 100) >= (100 - DROPS_PATH_TRACE_PERCENT);
+		drop.trackPath = (rand() % 100) >= (100 - DROPS_PATH_TRACE_PERCENT);
+//		drop.trackPath = true;
+		drop.pathAlpha = DROPS_PATH_ALPHA;
+		drop.scaling = glm::vec3(util::in_range(0.03f, 0.05f, 100.f));
+		drop.fadingMode = false;
 		drops.push_back(drop);
 	}
 }
@@ -99,11 +134,12 @@ void RainDrops::draw() const
 	std::list<glm::vec3>::const_iterator pi;
 
 	// Draw pathes
+	glPushAttrib(GL_LIGHTING);
 	glDisable(GL_LIGHTING);
-	glColor4f(0.f, 0.f, 0.f, 0.1f);
 	for (; i != drops.end(); ++i) {
-		if (!i->showPath)
+		if (!i->trackPath)
 			continue;
+		glColor4f(0.f, 0.f, 0.f, i->pathAlpha);
 		glBegin(GL_LINE_STRIP);
 		for (pi = i->path.begin(); pi != i->path.end(); ++pi) {
 			glVertex3fv(&pi->x);
@@ -111,13 +147,16 @@ void RainDrops::draw() const
 		glVertex3fv(&i->position.x);
 		glEnd();
 	}
-	glEnable(GL_LIGHTING);
+	glPopAttrib();
 
 	// Draw raindrops
 	shaders.begin();
 	//scene.geometries.at(rand() % scene.geometries.size())->draw();
 	for (i = drops.begin(); i != drops.end(); ++i) {
+		if (i->fadingMode)
+			continue;
 		i->mesh->position = i->position;
+		i->mesh->scaling = i->scaling;
 		i->mesh->draw();
 	}
 	shaders.end();
@@ -142,12 +181,44 @@ void RainDrops::animate()
 			}
 		}
 		else {
-			i->distance += i->speed;
-			i->position = i->path.back() + (i->direction * i->distance);
-
-			if (i->position.z < plane.min.z) {
+			if (i->fadingMode) {
+				if (i->trackPath) {
+					i->pathAlpha -= DROPS_PATH_FADE_OUT;
+					if (i->pathAlpha > 0.f) {
+						++i;
+						continue;
+					}
+				}
+				collision.set(i->position, NULL);
 				i = drops.erase(i);
 				continue;
+			}
+
+			if (i->position.z < plane.min.z) {
+				i->fadingMode = true;
+			}
+			else {
+				collision.set(i->position, NULL);
+
+				i->distance += i->speed;
+				i->position = i->path.back() + (i->direction * i->distance);
+
+				Particle* p = collision.get(i->position);
+				if (p) {
+					p->scaling += i->scaling;
+					if (p->scaling.x > DROP_MAX_SCALE)
+						p->scaling = glm::vec3(DROP_MAX_SCALE);
+					// Innerhit path if track enabled
+					if (i->trackPath && !p->trackPath) {
+						p->trackPath = true;
+						p->path = i->path;
+						i->trackPath = false;
+					}
+					i->fadingMode = true;
+				}
+				else {
+					collision.set(i->position, &(*i));
+				}
 			}
 		}
 		++i;

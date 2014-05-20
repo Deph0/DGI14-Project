@@ -1,4 +1,5 @@
 #include "util.h"
+#include "opengl.h"
 #include <sstream>
 #include <stdio.h>
 #include <stdarg.h>

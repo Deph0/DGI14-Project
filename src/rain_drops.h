@@ -7,8 +7,6 @@
 
 class RainDrops : public Drawable {
 public:
-	RainDrops();
-
 	void initialize();
 	void draw() const;
 
@@ -17,6 +15,9 @@ public:
 	void setDrawingPlane(const Geometry* g) {
 		g->getMinMax(&plane.min, &plane.max, true);
 	}
+
+	RainDrops();
+	~RainDrops();
 
 private:
 	void createDrops(size_t cnt);
@@ -38,34 +39,50 @@ private:
 
 		Geometry* mesh;
 		std::list<glm::vec3> path;
-		bool showPath;
+		bool trackPath;
+		// Current position, calculates with help
+		// of direction, distance and last start
+		// position
 		glm::vec3 position;
 		glm::vec3 direction;
+		// Distance form the last start position
 		float distance;
+		// Current speed of the drops
 		float speed;
 		// If speed is zero begin to move again
 		// after number of frames passed
 		size_t moveAfterFrames;
+		// Alpha channel of path color
+		float pathAlpha;
+		// Randomized scaling of the drop
+		glm::vec3 scaling;
+		// In this mode particle is not drawn
+		// but if it has a path it will be fading
+		// out before it is removed
+		bool fadingMode;
 	};
 
-/*	class CollisionMap {
+	class CollisionMap {
 	public:
-		void unset(const glm::vec3& pos);
-		void set(const glm::vec3& pos);
+		CollisionMap(float resolution)
+		: factor(resolution)
+		{ }
 
-		CollisionMap(const Rect* win, size_t accuracy);
-		~CollisionMap();
+		void set(const glm::vec3& pos, Particle* p);
+		Particle* get(const glm::vec3& pos);
 
 	private:
-		bool* map;
-		const Rect* plane;
-		float size;
-	};*/
+		typedef std::map<int, Particle*> SubMap;
+		typedef std::map<int, SubMap> Map;
+
+		Map map;
+		float factor;
+	};
 
 	Scene scene;
 	Particle::List drops;
 	ShaderProgram shaders;
-//	CollisionMap* collisionMap;
+	CollisionMap collision;
 };
 
 #endif // RAIN_DROPS_H
