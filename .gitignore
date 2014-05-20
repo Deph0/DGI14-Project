@@ -1,3 +1,7 @@
-.o
-.a
+*.o
+*.a
 src/rainyday
+
+# Mac index generic files
+*.DS_Store
+._*

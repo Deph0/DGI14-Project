@@ -5,8 +5,9 @@
 
 #ifdef __APPLE__ // Defined on Mac OS X
 
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#include <GL/glew.h>
+//#include <OpenGL/gl.h>
+//#include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 
 #elif __linux__ // Defined on Linux
