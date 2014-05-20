@@ -45,12 +45,12 @@ void Object::translate() const
 
 void Object::rotate() const
 {
-	glRotatef(
-		rotation.x.w, rotation.x.x, rotation.x.y, rotation.x.z);
-	glRotatef(
-		rotation.y.w, rotation.y.x, rotation.y.y, rotation.y.z);
-	glRotatef(
-		rotation.z.w, rotation.z.x, rotation.z.y, rotation.z.z);
+	if (rotation.x.w != 0.f)
+		glRotatef(rotation.x.w, rotation.x.x, rotation.x.y, rotation.x.z);
+	if (rotation.y.w != 0.f)
+		glRotatef(rotation.y.w, rotation.y.x, rotation.y.y, rotation.y.z);
+	if (rotation.z.w != 0.f)
+		glRotatef(rotation.z.w, rotation.z.x, rotation.z.y, rotation.z.z);
 }
 
 

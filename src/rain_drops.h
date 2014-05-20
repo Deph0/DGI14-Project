@@ -37,9 +37,16 @@ private:
 		void newDirection();
 		void newSpeed();
 
+		struct {
+			std::list<glm::vec3> positions;
+			bool track;
+			// Alpha channel of path color
+			float alpha;
+			// Line width
+			float width;
+		} path;
+
 		Geometry* mesh;
-		std::list<glm::vec3> path;
-		bool trackPath;
 		// Current position, calculates with help
 		// of direction, distance and last start
 		// position
@@ -52,8 +59,6 @@ private:
 		// If speed is zero begin to move again
 		// after number of frames passed
 		size_t moveAfterFrames;
-		// Alpha channel of path color
-		float pathAlpha;
 		// Randomized scaling of the drop
 		glm::vec3 scaling;
 		// In this mode particle is not drawn

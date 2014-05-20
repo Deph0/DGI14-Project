@@ -33,7 +33,7 @@ void RainDrops::initialize()
 	}
 
 //	createDrops(MAX_NR_DROPS);
-	glLineWidth(3.f);
+//	glLineWidth(3.f);
 
 	shaders.createShader(GL_VERTEX_SHADER_ARB)->load(
 		util::shader_path("raindrop.vert"));
@@ -66,7 +66,7 @@ void RainDrops::Particle::newDirection()
 	direction.z = util::in_range(-0.6f, -0.1f, 10.f);
 	distance = 0.f;
 	newSpeed();
-	path.push_back(position);
+	path.positions.push_back(position);
 }
 
 
@@ -87,7 +87,6 @@ void RainDrops::CollisionMap::set(const glm::vec3& pos, RainDrops::Particle* p)
 	int y = round(pos.z * factor);
 
 	map[y][x] = p;
-//	map[glm::ivec2(int(pos.x * factor), int(pos.z * factor))] = p;
 }
 
 
@@ -118,11 +117,12 @@ void RainDrops::createDrops(size_t cnt)
 		drop.position = plane.randomize(DROPS_SPREADING_FACTOR);
 		drop.newDirection();
 		// Only specified percentage of drops should have path trace
-		drop.trackPath = (rand() % 100) >= (100 - DROPS_PATH_TRACE_PERCENT);
-//		drop.trackPath = true;
-		drop.pathAlpha = DROPS_PATH_ALPHA;
-		drop.scaling = glm::vec3(util::in_range(0.03f, 0.05f, 100.f));
+		drop.path.track = (rand() % 100) >= (100 - DROPS_PATH_TRACE_PERCENT);
+//		drop.path.track = true;
+		drop.path.alpha = DROPS_PATH_ALPHA;
+		drop.scaling = glm::vec3(util::in_range(0.02f, 0.04f, 1000.f));
 		drop.fadingMode = false;
+		drop.path.width = drop.scaling.x * 80.f;
 		drops.push_back(drop);
 	}
 }
@@ -137,11 +137,13 @@ void RainDrops::draw() const
 	glPushAttrib(GL_LIGHTING);
 	glDisable(GL_LIGHTING);
 	for (; i != drops.end(); ++i) {
-		if (!i->trackPath)
+		if (!i->path.track)
 			continue;
-		glColor4f(0.f, 0.f, 0.f, i->pathAlpha);
+		glColor4f(0.f, 0.f, 0.f, i->path.alpha);
+		glLineWidth(i->path.width);
 		glBegin(GL_LINE_STRIP);
-		for (pi = i->path.begin(); pi != i->path.end(); ++pi) {
+		pi = i->path.positions.begin();
+		for (; pi != i->path.positions.end(); ++pi) {
 			glVertex3fv(&pi->x);
 		}
 		glVertex3fv(&i->position.x);
@@ -182,9 +184,9 @@ void RainDrops::animate()
 		}
 		else {
 			if (i->fadingMode) {
-				if (i->trackPath) {
-					i->pathAlpha -= DROPS_PATH_FADE_OUT;
-					if (i->pathAlpha > 0.f) {
+				if (i->path.track) {
+					i->path.alpha -= DROPS_PATH_FADE_OUT;
+					if (i->path.alpha > 0.f) {
 						++i;
 						continue;
 					}
@@ -201,7 +203,7 @@ void RainDrops::animate()
 				collision.set(i->position, NULL);
 
 				i->distance += i->speed;
-				i->position = i->path.back() + (i->direction * i->distance);
+				i->position = i->path.positions.back() + (i->direction * i->distance);
 
 				Particle* p = collision.get(i->position);
 				if (p) {
@@ -209,10 +211,9 @@ void RainDrops::animate()
 					if (p->scaling.x > DROP_MAX_SCALE)
 						p->scaling = glm::vec3(DROP_MAX_SCALE);
 					// Innerhit path if track enabled
-					if (i->trackPath && !p->trackPath) {
-						p->trackPath = true;
+					if (i->path.track && !p->path.track) {
 						p->path = i->path;
-						i->trackPath = false;
+						i->path.track = false;
 					}
 					i->fadingMode = true;
 				}

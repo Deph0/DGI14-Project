@@ -16,7 +16,7 @@
 // frame with specified constant here
 #define DROPS_PATH_FADE_OUT 0.001f
 // The raindrop can't be bigger than this
-#define DROP_MAX_SCALE 0.06f
+#define DROP_MAX_SCALE 0.04f
 
 #endif // SETTINGS_H
 
