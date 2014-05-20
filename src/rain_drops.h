@@ -39,7 +39,6 @@ private:
 
 		struct {
 			std::list<glm::vec3> positions;
-			bool track;
 			// Alpha channel of path color
 			float alpha;
 			// Line width

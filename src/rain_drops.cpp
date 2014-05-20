@@ -33,7 +33,6 @@ void RainDrops::initialize()
 	}
 
 //	createDrops(MAX_NR_DROPS);
-//	glLineWidth(3.f);
 
 	shaders.createShader(GL_VERTEX_SHADER_ARB)->load(
 		util::shader_path("raindrop.vert"));
@@ -111,15 +110,12 @@ RainDrops::Particle* RainDrops::CollisionMap::get(const glm::vec3& pos)
 void RainDrops::createDrops(size_t cnt)
 {
 	size_t nrDrops = scene.geometries.size();
-	Particle drop;
 
 	for (; cnt > 0; cnt--) {
+		Particle drop;
 		drop.mesh = scene.geometries.at(rand() % nrDrops);
 		drop.position = plane.randomize(DROPS_SPREADING_FACTOR);
 		drop.newDirection();
-		// Only specified percentage of drops should have path trace
-//		drop.path.track = (rand() % 100) >= 80;
-		drop.path.track = true;
 		drop.path.alpha = util::in_range(
 			DROPS_PATH_ALPHA_MIN, DROPS_PATH_ALPHA_MAX, 100.f);
 		drop.scaling = glm::vec3(
@@ -146,8 +142,6 @@ void RainDrops::draw() const
 	glPushAttrib(GL_LIGHTING);
 	glDisable(GL_LIGHTING);
 	for (; i != drops.end(); ++i) {
-		if (!i->path.track)
-			continue;
 		glColor4f(0.f, 0.f, 0.f, i->path.alpha);
 	#ifdef USING_LINES
 		glLineWidth(i->path.width);
@@ -190,8 +184,9 @@ void RainDrops::draw() const
 void RainDrops::animate()
 {
 	if (drops.size() < MAX_NR_DROPS) {
-		//createDrops(rand() % (MAX_NR_DROPS - drops.size()) + 1);
-		createDrops(1);
+		int heaviness = std::min(
+			HEAVINESS_OF_THE_RAIN, int(MAX_NR_DROPS - drops.size())) + 1;
+		createDrops(rand() % heaviness);
 	}
 
 	Particle::Iter i = drops.begin();
@@ -207,15 +202,13 @@ void RainDrops::animate()
 		}
 		else {
 			if (i->fadingMode) {
-				if (i->path.track) {
-					i->path.alpha -= DROPS_PATH_FADE_OUT;
-					if (i->path.alpha > 0.f) {
-						++i;
-						continue;
-					}
+				i->path.alpha -= DROPS_PATH_FADE_OUT;
+				if (i->path.alpha > 0.f)
+					++i;
+				else {
+					collision.set(i->position, NULL);
+					i = drops.erase(i);
 				}
-				collision.set(i->position, NULL);
-				i = drops.erase(i);
 				continue;
 			}
 
@@ -233,11 +226,6 @@ void RainDrops::animate()
 					p->scaling += i->scaling;
 					if (p->scaling.x > DROP_MAX_SIZE)
 						p->scaling = glm::vec3(DROP_MAX_SIZE);
-					// Innerhit path if track enabled
-					if (i->path.track && !p->path.track) {
-						p->path = i->path;
-						i->path.track = false;
-					}
 					i->fadingMode = true;
 				}
 				else {

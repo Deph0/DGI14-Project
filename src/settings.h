@@ -6,6 +6,8 @@
 
 // Max number of simultaneous drops on the window
 #define MAX_NR_DROPS 1000
+// Specifying how heavy rain is (integer, 1 ... MAX_NR_DROPS)
+#define HEAVINESS_OF_THE_RAIN 5
 // Resolution of the window
 #define DROPS_SPREADING_FACTOR 1000
 // The alpha channel of drop's path color (color is black)
