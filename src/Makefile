@@ -5,7 +5,7 @@ DEFS =
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
 LDFLAGS = -L../lib/pugixml -framework GLUT -framework OpenGL
-LIBS = -lSOIL -lpugixml
+LIBS = -lSOIL -lpugixml -lGLEW
 else
 LDFLAGS = -L../lib/pugixml -L../lib/SOIL
 LIBS = -lGL -lglut -lGLU -lGLEW -lSOIL -lpugixml
