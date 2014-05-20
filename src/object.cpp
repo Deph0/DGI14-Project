@@ -1,5 +1,6 @@
 #include "object.h"
 #include "opengl.h"
+#include "glm/gtx/transform.hpp"
 
 
 Object::Object()
@@ -64,5 +65,15 @@ void Object::transform() const
 	translate();
 	rotate();
 	scale();
+}
+
+
+glm::mat4 Object::getTransformMatrix() const
+{
+	return glm::translate(position) * \
+		   glm::rotate(rotation.x.w, rotation.x.x, rotation.x.y, rotation.x.z) * \
+		   glm::rotate(rotation.y.w, rotation.y.x, rotation.y.y, rotation.y.z) * \
+		   glm::rotate(rotation.z.w, rotation.z.x, rotation.z.y, rotation.z.z) * \
+		   glm::scale(scaling);
 }
 

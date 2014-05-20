@@ -43,6 +43,11 @@ void Scene::initialize()
 	for (; mi != materials.end(); ++mi) {
 		mi->second->initialize();
 	}
+
+	Geometry::Iter gi = geometries.begin();
+	for (; gi != geometries.end(); ++gi) {
+		(*gi)->initialize();
+	}
 }
 
 

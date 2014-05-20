@@ -20,6 +20,8 @@ public:
 	// Set all rotations to zero angle
 	void resetRotation();
 
+	glm::mat4 getTransformMatrix() const;
+
 	std::string name;
 
 	glm::vec3 position;

@@ -20,6 +20,7 @@ public:
 private:
 	static void reshape(int width, int height);
 	static void display();
+	static void idle();
 	static void keyDown(unsigned char key, int x, int y);
 	static void specialKeyDown(int key, int x, int y);
 	static void mouseButton(int button, int state, int x, int y);

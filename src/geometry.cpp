@@ -3,6 +3,11 @@
 #include "opengl.h"
 
 
+void Geometry::initialize()
+{
+}
+
+
 void Geometry::draw() const
 {
 	bool texture = false;
@@ -37,7 +42,7 @@ void Geometry::draw() const
 }
 
 
-void Geometry::getMinMax(glm::vec3* min, glm::vec3* max) const
+void Geometry::getMinMax(glm::vec3* min, glm::vec3* max, bool transformed) const
 {
 	glm::vec3 cur;
 	size_t i = 0;
@@ -65,11 +70,11 @@ void Geometry::getMinMax(glm::vec3* min, glm::vec3* max) const
 			max->z = cur.z;
 	}
 
-	// Translate
-	*min = *min + position;
-	*max = *max + position;
-	// TODO add rotation and scaling
-	// maybe be should be incapsled in transform flag
+	if (transformed) {
+		const glm::mat4& tm = getTransformMatrix();
+		*min = glm::vec3(tm * glm::vec4(*min, 1.f));
+		*max = glm::vec3(tm * glm::vec4(*max, 1.f));
+	}
 }
 
 

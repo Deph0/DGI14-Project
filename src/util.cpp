@@ -2,6 +2,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 
 namespace util {
@@ -66,6 +67,12 @@ std::string format(const char* fmt, ...)
 	va_end(ap);
 
 	return out;
+}
+
+
+float in_range(float low, float high, float resolution)
+{
+	return (rand() % (int((high - low) * resolution) + 1)) / resolution + low;
 }
 
 

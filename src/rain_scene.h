@@ -15,6 +15,7 @@ private:
 	void on(GlutListener::Initialize);
 	void on(GlutListener::Reshape, int width, int height);
 	void on(GlutListener::Display);
+	void on(GlutListener::Idle);
 	void on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y);
 	void on(GlutListener::MouseButton, int button, int state, int x, int y);
 	void on(GlutListener::MouseMove, int x, int y);

@@ -1,5 +1,6 @@
 #include "obj_model.h"
 #include "util.h"
+#include "exception.h"
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
@@ -17,7 +18,7 @@ void ObjModel::load(const std::string& fname, Scene* scene)
 
 	file.open(fname.c_str());
 	if (!file.is_open()) {
-		throw ModelException("could not open " + fname);
+		throw Exception("could not open " + fname);
 	}
 
 	printf("reading %s\n", fname.c_str());
@@ -46,7 +47,7 @@ void ObjModel::load(const std::string& fname, Scene* scene)
 			// Find the material, should be loaded already
 			Material::cIter i = scene->materials.find(cline + 7);
 			if (i == scene->materials.end())
-				throw ModelException("material [" + std::string(cline + 7) + "] not found");
+				throw Exception(util::format("material [%s] not found", cline + 7));
 			obj->material = i->second;
 		}
 		// Vertex with (x,y,z) coordinates
@@ -81,7 +82,7 @@ void ObjModel::load(const std::string& fname, Scene* scene)
 				if (ti == tokens.end() || ti->length() == 0) {
 					char buf[100];
 					sprintf(buf, "expecting vertex on line %d", lineCnt);
-					throw ModelException(buf);
+					throw Exception(buf);
 				}
 				idx = (atoi(ti->c_str()) - 1) * 3;
 				for (i = 0; i < 3; i++)
@@ -133,7 +134,7 @@ void ObjModel::loadMaterials(const std::string& fname, Material::Map* lst)
 
 	file.open(fname.c_str());
 	if (!file.is_open()) {
-		throw ModelException(std::string("could not open ") + fname);
+		throw Exception("could not open " + fname);
 	}
 
 	printf("reading %s\n", fname.c_str());

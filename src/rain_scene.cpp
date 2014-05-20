@@ -37,9 +37,6 @@ void RainScene::on(GlutListener::Initialize)
 	if (lamp) {
 		lamp->color = lamp->color * 7.f;
 	}
-//	PointLight* sun = (PointLight*)scene.getByName("SunLamp");
-//	if (sun)
-//		sun->position.x += 4.f;
 	Geometry* plane = (Geometry*)scene.getByName("BkgndPlane");
 	if (plane) {
 		plane->material->diffuse->color = glm::vec4(2.f);
@@ -51,9 +48,7 @@ void RainScene::on(GlutListener::Initialize)
 	// of it's transparency
 	glass = (Geometry*)scene.getByName("Glass", true);
 	// Set plain where drops will appear
-	glm::vec3 min, max;
-	glass->getMinMax(&min, &max);
-	raindrops.setDrawingPlane(min, max);
+	raindrops.setDrawingPlane(glass);
 	// Initialize the raindrops
 	raindrops.initialize();
 }
@@ -70,6 +65,12 @@ void RainScene::on(GlutListener::Display)
 	scene.draw();
 	raindrops.draw();
 	glass->draw();
+}
+
+
+void RainScene::on(GlutListener::Idle)
+{
+	raindrops.animate();
 }
 
 
