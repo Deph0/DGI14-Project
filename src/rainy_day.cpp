@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowSize(640, 480);
+	glutInitWindowSize(800, 600);
 	glutCreateWindow("DGI14 Project - Rainy Window");
 
 	glewInit();

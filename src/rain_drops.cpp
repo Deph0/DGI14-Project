@@ -72,11 +72,12 @@ void RainDrops::Particle::newDirection()
 
 void RainDrops::Particle::newSpeed()
 {
-	if (rand() & 1)
-		speed = util::in_range(0.02f, 0.1f, 100.f);
+	// Don't move to small ones
+	if (scaling.x >= DROP_MOVE_MIN_SIZE && rand() % 101 > 80)
+		speed = util::in_range(0.005f, 0.02f, 1000.f);
 	else {
 		speed = 0.f;
-		moveAfterFrames = rand() % 100 + 1;
+		moveAfterFrames = rand() % 100 + 100;
 	}
 }
 
@@ -117,12 +118,20 @@ void RainDrops::createDrops(size_t cnt)
 		drop.position = plane.randomize(DROPS_SPREADING_FACTOR);
 		drop.newDirection();
 		// Only specified percentage of drops should have path trace
-		drop.path.track = (rand() % 100) >= (100 - DROPS_PATH_TRACE_PERCENT);
-//		drop.path.track = true;
-		drop.path.alpha = DROPS_PATH_ALPHA;
-		drop.scaling = glm::vec3(util::in_range(0.02f, 0.04f, 1000.f));
+//		drop.path.track = (rand() % 100) >= 80;
+		drop.path.track = true;
+		drop.path.alpha = util::in_range(
+			DROPS_PATH_ALPHA_MIN, DROPS_PATH_ALPHA_MAX, 100.f);
+		drop.scaling = glm::vec3(
+			util::in_range(DROP_MIN_SIZE, DROP_MAX_SIZE, 1000.f));
 		drop.fadingMode = false;
-		drop.path.width = drop.scaling.x * 80.f;
+	#ifdef USING_LINES
+		// The following constant factor should be depend on zooming
+		// factor and window size
+		drop.path.width = drop.scaling.x * 150.f;
+	#else // not USING_LINES
+		drop.path.width = drop.scaling.x * 2.f;
+	#endif
 		drops.push_back(drop);
 	}
 }
@@ -140,6 +149,7 @@ void RainDrops::draw() const
 		if (!i->path.track)
 			continue;
 		glColor4f(0.f, 0.f, 0.f, i->path.alpha);
+	#ifdef USING_LINES
 		glLineWidth(i->path.width);
 		glBegin(GL_LINE_STRIP);
 		pi = i->path.positions.begin();
@@ -147,6 +157,18 @@ void RainDrops::draw() const
 			glVertex3fv(&pi->x);
 		}
 		glVertex3fv(&i->position.x);
+	#else // not USING_LINES
+		float w = i->path.width / 2.f;
+		glBegin(GL_TRIANGLE_STRIP);
+		pi = i->path.positions.begin();
+		glVertex3fv(&pi->x);
+		while (++pi != i->path.positions.end()) {
+			glVertex3f(pi->x - w, pi->y, pi->z);
+			glVertex3f(pi->x + w, pi->y, pi->z);
+		}
+		glVertex3f(i->position.x - w, i->position.y, i->position.z);
+		glVertex3f(i->position.x + w, i->position.y, i->position.z);
+	#endif
 		glEnd();
 	}
 	glPopAttrib();
@@ -168,6 +190,7 @@ void RainDrops::draw() const
 void RainDrops::animate()
 {
 	if (drops.size() < MAX_NR_DROPS) {
+		//createDrops(rand() % (MAX_NR_DROPS - drops.size()) + 1);
 		createDrops(1);
 	}
 
@@ -208,8 +231,8 @@ void RainDrops::animate()
 				Particle* p = collision.get(i->position);
 				if (p) {
 					p->scaling += i->scaling;
-					if (p->scaling.x > DROP_MAX_SCALE)
-						p->scaling = glm::vec3(DROP_MAX_SCALE);
+					if (p->scaling.x > DROP_MAX_SIZE)
+						p->scaling = glm::vec3(DROP_MAX_SIZE);
 					// Innerhit path if track enabled
 					if (i->path.track && !p->path.track) {
 						p->path = i->path;

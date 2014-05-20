@@ -67,6 +67,7 @@ private:
 		bool fadingMode;
 	};
 
+	// Not the best implementation
 	class CollisionMap {
 	public:
 		CollisionMap(float resolution)

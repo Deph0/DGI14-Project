@@ -30,8 +30,9 @@ void RainScene::on(GlutListener::Initialize)
 	// Blender sets very strange rotation by default
 	c->resetRotation();
 	// Setting the best view position found with
-	// scene.camera.print() in display function
+	// scene.camera.print() in onSpecialKeyDown function
 	c->position = glm::vec3(-0.587549, -9.783041, 3.032476);
+	//c->rotation.z = glm::vec4(0.f, 0.f, 1.f, -4.f);
 
 	// Fix too darkness
 	PointLight* lamp = (PointLight*)scene.getByName("InsideLamp");
@@ -73,7 +74,7 @@ void RainScene::on(GlutListener::Idle, int deltaTime)
 {
 	fps = 1000.f / deltaTime;
 	raindrops.animate();
-printf("fps: %4.2f \r", fps);
+	printf("fps: %4.2f \r", fps);
 }
 
 
@@ -107,6 +108,7 @@ void RainScene::on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y
 		return;
 	}
 
+	//c->print();
 	glutPostRedisplay();
 }
 
