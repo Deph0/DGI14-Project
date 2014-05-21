@@ -88,17 +88,11 @@ void RainScene::on(GlutListener::KeyDown, unsigned char key, int x, int y)
 {
 	if (key == '+') {
 		// Zoom in
-		Camera* c = scene.camera;
-		const glm::vec3& dir = c->lookAt - c->position;
-		c->position = c->position + dir * 0.02f;
-		glutPostRedisplay();
+		zoom(true);
 	}
 	else if (key == '-') {
 		// Zoom out
-		Camera* c = scene.camera;
-		const glm::vec3& dir = c->lookAt - c->position;
-		c->position = c->position - dir * 0.02f;
-		glutPostRedisplay();
+		zoom(false);
 	}
 }
 
@@ -150,17 +144,11 @@ void RainScene::on(GlutListener::MouseButton, int button, int state, int x, int 
 	// Each wheel event reports like a button click, GLUT_DOWN then GLUT_UP
 	if (button == 3) {
 		// Scroll up
-		Camera* c = scene.camera;
-		const glm::vec3& dir = c->lookAt - c->position;
-		c->position = c->position + dir * 0.02f;
-		glutPostRedisplay();
+		zoom(true);
 	}
 	else if (button == 4) {
 		// Scroll down
-		Camera* c = scene.camera;
-		const glm::vec3& dir = c->lookAt - c->position;
-		c->position = c->position - dir * 0.02f;
-		glutPostRedisplay();
+		zoom(false);
 	}
 }
 
@@ -173,6 +161,17 @@ void RainScene::on(GlutListener::MouseMove, int x, int y)
 	c->rotation.x.w = (mousePos.y - y) * speed;
 	c->rotation.y.w = (mousePos.x - x) * speed;
 
+	glutPostRedisplay();
+}
+
+
+void RainScene::zoom(bool in)
+{
+	Camera* c = scene.camera;
+	const glm::vec3& dir = c->lookAt - c->position;
+	float speed = in ? 0.02f : -0.02f;
+
+	c->position = c->position + dir * speed;
 	glutPostRedisplay();
 }
 

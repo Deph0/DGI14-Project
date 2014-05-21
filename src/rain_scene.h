@@ -21,6 +21,9 @@ private:
 	void on(GlutListener::MouseButton, int button, int state, int x, int y);
 	void on(GlutListener::MouseMove, int x, int y);
 
+	// Zoom in (true) or out (false)
+	void zoom(bool in);
+
 	Scene scene;
 	RainDrops raindrops;
 	glm::ivec2 mousePos;
