@@ -2,6 +2,7 @@
 #include "dae_model.h"
 #include "point_light.h"
 #include "util.h"
+#include "settings.h"
 #include <glm/gtx/rotate_vector.hpp>
 
 
@@ -74,9 +75,26 @@ void RainScene::on(GlutListener::Idle, int deltaTime)
 {
 	fps = 1000.f / deltaTime;
 	raindrops.animate();
-	printf("fps: %4.2f \r", fps);
+	glutSetWindowTitle(util::format("%s - fps: %4.2f", WINDOW_TITLE, fps ).c_str() );
 }
 
+void RainScene::on(GlutListener::KeyDown, unsigned char key, int x, int y)
+{
+	if (key == '+') {
+		// Zoom in
+		Camera* c = scene.camera;
+		const glm::vec3& dir = c->lookAt - c->position;
+		c->position = c->position + dir * 0.02f;
+		glutPostRedisplay();
+	}
+	else if (key == '-') {
+		// Zoom out
+		Camera* c = scene.camera;
+		const glm::vec3& dir = c->lookAt - c->position;
+		c->position = c->position - dir * 0.02f;
+		glutPostRedisplay();
+	}
+}
 
 void RainScene::on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y)
 {
