@@ -10,7 +10,9 @@ public:
 	void initialize();
 	void draw() const;
 
-	void animate();
+	// Update all drop's status.
+	// Return true if drops need to be redrawn.
+	bool animate();
 
 	void setDrawingPlane(const Geometry* g) {
 		g->getMinMax(&plane.min, &plane.max, true);
@@ -30,7 +32,7 @@ private:
 	} plane;
 
 	struct Particle {
-		typedef std::list<Particle> List;
+		typedef std::list<Particle*> List;
 		typedef List::const_iterator cIter;
 		typedef List::iterator Iter;
 
@@ -66,28 +68,30 @@ private:
 		bool fadingMode;
 	};
 
-	// Not the best implementation
-	class CollisionMap {
+	class CollisionTest {
 	public:
-		CollisionMap(float resolution)
-		: factor(resolution)
-		{ }
+		CollisionTest(const Rect* rc, size_t size);
 
-		void set(const glm::vec3& pos, Particle* p);
-		Particle* get(const glm::vec3& pos);
+		Particle* check(Particle* p);
+		void remove(Particle* p);
+//		void set(const glm::vec3& pos, Particle* p);
+//		Particle* get(const glm::vec3& pos);
 
 	private:
-		typedef std::map<int, Particle*> SubMap;
-		typedef std::map<int, SubMap> Map;
+		typedef std::vector<Particle::List> CellMap;
+		typedef std::map<Particle*, int> PtrIdxMap;
 
-		Map map;
-		float factor;
+		const Rect* plane;
+		size_t resolution;
+		glm::vec3 factor;
+		CellMap cellMap;
+		PtrIdxMap ptrIdxMap;
 	};
 
 	Scene scene;
 	Particle::List drops;
 	ShaderProgram shaders;
-	CollisionMap collision;
+	CollisionTest* collision;
 };
 
 #endif // RAIN_DROPS_H

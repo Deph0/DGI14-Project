@@ -72,9 +72,15 @@ void RainScene::on(GlutListener::Display)
 
 void RainScene::on(GlutListener::Idle, int deltaTime)
 {
+	bool redraw = false;
+
 	fps = 1000.f / deltaTime;
-	raindrops.animate();
+
+	redraw |= raindrops.animate();
 	printf("fps: %4.2f \r", fps);
+
+	if (redraw)
+		glutPostRedisplay();
 }
 
 

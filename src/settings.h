@@ -21,6 +21,9 @@
 #define DROP_MAX_SIZE 0.03f
 // The drops with size below that will never move
 #define DROP_MOVE_MIN_SIZE 0.02f
+// The distance between two drop less than this
+// will trigger the collision event
+#define COLLISION_DISTANCE 0.03f
 
 #endif // SETTINGS_H
 
