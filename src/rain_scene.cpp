@@ -2,6 +2,7 @@
 #include "dae_model.h"
 #include "point_light.h"
 #include "util.h"
+#include "settings.h"
 #include <glm/gtx/rotate_vector.hpp>
 
 
@@ -31,8 +32,8 @@ void RainScene::on(GlutListener::Initialize)
 	c->resetRotation();
 	// Setting the best view position found with
 	// scene.camera.print() in onSpecialKeyDown function
-	c->position = glm::vec3(-0.587549, -9.783041, 3.032476);
-	//c->rotation.z = glm::vec4(0.f, 0.f, 1.f, -4.f);
+	//c->position = glm::vec3(-0.587549, -9.783041, 3.032476);
+	c->position = glm::vec3(0, -9.204037, 3.032476);
 
 	// Fix too darkness
 	PointLight* lamp = (PointLight*)scene.getByName("InsideLamp");
@@ -75,14 +76,31 @@ void RainScene::on(GlutListener::Idle, int deltaTime)
 	bool redraw = false;
 
 	fps = 1000.f / deltaTime;
+	glutSetWindowTitle(util::format("%s - FPS: %4.2f", WINDOW_TITLE, fps).c_str());
 
 	redraw |= raindrops.animate();
-	printf("fps: %4.2f \r", fps);
 
 	if (redraw)
 		glutPostRedisplay();
 }
 
+void RainScene::on(GlutListener::KeyDown, unsigned char key, int x, int y)
+{
+	if (key == '+') {
+		// Zoom in
+		Camera* c = scene.camera;
+		const glm::vec3& dir = c->lookAt - c->position;
+		c->position = c->position + dir * 0.02f;
+		glutPostRedisplay();
+	}
+	else if (key == '-') {
+		// Zoom out
+		Camera* c = scene.camera;
+		const glm::vec3& dir = c->lookAt - c->position;
+		c->position = c->position - dir * 0.02f;
+		glutPostRedisplay();
+	}
+}
 
 void RainScene::on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y)
 {

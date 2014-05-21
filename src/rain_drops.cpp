@@ -176,8 +176,6 @@ void RainDrops::draw() const
 	glPushAttrib(GL_LIGHTING);
 	glDisable(GL_LIGHTING);
 	for (; i != drops.end(); ++i) {
-		if ((*i)->path.positions.size() < 2)
-			continue;
 		glColor4f(0.f, 0.f, 0.f, (*i)->path.alpha);
 		float w = (*i)->path.width / 2.f;
 		glBegin(GL_TRIANGLE_STRIP);

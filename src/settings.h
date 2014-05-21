@@ -1,6 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#define WINDOW_TITLE "DGI14 Project - Rainy Window"
+
 // Limit to number of frames per second
 #define FRAMES_PER_SECOND 30
 
