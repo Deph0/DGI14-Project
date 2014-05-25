@@ -29,7 +29,8 @@ std::string unescape(const std::string& str);
 
 std::string format(const char* fmt, ...);
 
-float in_range(float low, float high, float resolution);
+// Randomize a number in specified range and resolution
+float rand_range(float low, float high, int resolution);
 
 // Append default resource path in the beginning of the string
 std::string resource_path(const std::string& str);

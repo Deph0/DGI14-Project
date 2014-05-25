@@ -71,9 +71,10 @@ std::string format(const char* fmt, ...)
 }
 
 
-float in_range(float low, float high, float resolution)
+float rand_range(float low, float high, int resolution)
 {
-	return (rand() % (int((high - low) * resolution) + 1)) / resolution + low;
+	float delta = high - low;
+	return low + (rand() % (resolution + 1)) / float(resolution) * delta;
 }
 
 
