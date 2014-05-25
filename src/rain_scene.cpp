@@ -54,6 +54,9 @@ void RainScene::on(GlutListener::Initialize)
 	raindrops.setDrawingPlane(glass);
 	// Initialize the raindrops
 	raindrops.initialize();
+
+	// Background rain
+	bgndRain.initialize();
 }
 
 
@@ -67,6 +70,7 @@ void RainScene::on(GlutListener::Display)
 {
 	scene.draw();
 	raindrops.draw();
+	bgndRain.draw();
 	glass->draw();
 }
 
@@ -79,6 +83,7 @@ void RainScene::on(GlutListener::Idle, int deltaTime)
 	glutSetWindowTitle(util::format("%s - FPS: %4.2f", WINDOW_TITLE, fps).c_str());
 
 	redraw |= raindrops.animate();
+	redraw |= bgndRain.animate();
 
 	if (redraw)
 		glutPostRedisplay();

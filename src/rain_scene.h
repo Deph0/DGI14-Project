@@ -3,6 +3,7 @@
 
 #include "scene.h"
 #include "rain_drops.h"
+#include "background_rain.h"
 #include "glut_listener.h"
 
 
@@ -26,6 +27,7 @@ private:
 
 	Scene scene;
 	RainDrops raindrops;
+	BackgroundRain bgndRain;
 	glm::ivec2 mousePos;
 	Geometry* glass;
 	float fps;

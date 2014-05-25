@@ -34,7 +34,7 @@ void RainDrops::initialize()
 //		(*i)->scaling = glm::vec3(0.04f);
 	}
 
-	collision = new CollisionTest(&plane, sqrt(MAX_NR_DROPS));
+	collision = new CollisionTest(&plane, sqrt(MAX_NR_DROPS_ON_WINDOW));
 
 	shaders.createShader(GL_VERTEX_SHADER_ARB)->load(
 		util::shader_path("raindrop.vert"));
@@ -61,10 +61,10 @@ glm::vec3 RainDrops::Rect::randomize(int accuracy) const
 void RainDrops::Particle::newDirection()
 {
 	// x spreading in range -0.2 - 0.2
-	direction.x = util::in_range(-0.2f, 0.2f, 100.f);
+	direction.x = util::rand_range(-0.2f, 0.2f, 100.f);
 	direction.y = 0.f;
 	// z spreading in range -0.6 - -0.1
-	direction.z = util::in_range(-0.6f, -0.1f, 10.f);
+	direction.z = util::rand_range(-0.6f, -0.1f, 10.f);
 	distance = 0.f;
 	newSpeed();
 	path.positions.push_back(position);
@@ -73,9 +73,9 @@ void RainDrops::Particle::newDirection()
 
 void RainDrops::Particle::newSpeed()
 {
-	// Don't move to small ones
+	// Don't move too small ones
 	if (scaling.x >= DROP_MOVE_MIN_SIZE && rand() % 101 > 80)
-		speed = util::in_range(0.005f, 0.02f, 1000.f);
+		speed = util::rand_range(0.005f, 0.02f, 1000.f);
 	else {
 		speed = 0.f;
 		moveAfterFrames = rand() % 100 + 100;
@@ -107,6 +107,8 @@ RainDrops::Particle* RainDrops::CollisionTest::check(RainDrops::Particle* p)
 
 	// Found the cell
 	const glm::vec3& t = (pos - plane->min) / factor;
+	if (t.z >= resolution || t.x >= resolution)
+		return NULL;
 	int idx = int(t.z) * resolution + int(t.x);
 
 	// Map pointer to index to find it quickly when we need to remove it
@@ -156,10 +158,10 @@ void RainDrops::createDrops(size_t cnt)
 		drop->mesh = scene.geometries.at(rand() % nrDrops);
 		drop->position = plane.randomize(DROPS_SPREADING_FACTOR);
 		drop->newDirection();
-		drop->path.alpha = util::in_range(
+		drop->path.alpha = util::rand_range(
 			DROPS_PATH_ALPHA_MIN, DROPS_PATH_ALPHA_MAX, 100.f);
 		drop->scaling = glm::vec3(
-			util::in_range(DROP_MIN_SIZE, DROP_MAX_SIZE, 1000.f));
+			util::rand_range(DROP_MIN_SIZE, DROP_MAX_SIZE, 1000.f));
 		drop->fadingMode = false;
 		drop->path.width = drop->scaling.x * 2.f;
 		drops.push_back(drop);
@@ -209,9 +211,9 @@ bool RainDrops::animate()
 {
 	bool draw = false;
 
-	if (drops.size() < MAX_NR_DROPS) {
+	if (drops.size() < MAX_NR_DROPS_ON_WINDOW) {
 		int heaviness = std::min(
-			HEAVINESS_OF_THE_RAIN, int(MAX_NR_DROPS - drops.size())) + 1;
+			HEAVINESS_OF_THE_RAIN, int(MAX_NR_DROPS_ON_WINDOW - drops.size())) + 1;
 		int nr = rand() % heaviness;
 		createDrops(nr);
 		if (nr > 0)

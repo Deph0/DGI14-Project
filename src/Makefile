@@ -27,6 +27,7 @@ util.cpp \
 shader.cpp \
 shader_program.cpp \
 rain_drops.cpp \
+background_rain.cpp \
 rain_scene.cpp \
 rainy_day.cpp
 OBJS = $(SRCS:.cpp=.o)

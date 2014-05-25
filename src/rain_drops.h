@@ -74,8 +74,6 @@ private:
 
 		Particle* check(Particle* p);
 		void remove(Particle* p);
-//		void set(const glm::vec3& pos, Particle* p);
-//		Particle* get(const glm::vec3& pos);
 
 	private:
 		typedef std::vector<Particle::List> CellMap;

@@ -6,8 +6,10 @@
 // Limit to number of frames per second
 #define FRAMES_PER_SECOND 30
 
+// Max number of simultaneous drops in the background
+#define MAX_NR_DROPS_BGND 300
 // Max number of simultaneous drops on the window
-#define MAX_NR_DROPS 1000
+#define MAX_NR_DROPS_ON_WINDOW 1000
 // Specifying how heavy rain is (integer, 1 ... MAX_NR_DROPS)
 #define HEAVINESS_OF_THE_RAIN 5
 // Resolution of the window
