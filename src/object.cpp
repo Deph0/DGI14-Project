@@ -5,17 +5,29 @@
 
 Object::Object()
 : position(0.f)
+, rotation(0.f)
 , scaling(1.f)
 {
-	resetRotation();
 }
 
 
-void Object::resetRotation()
+Object::~Object()
 {
-	rotation.x = glm::vec4(1.f, 0.f, 0.f, 0.f);
-	rotation.y = glm::vec4(0.f, 1.f, 0.f, 0.f);
-	rotation.z = glm::vec4(0.f, 0.f, 1.f, 0.f);
+	Sound::Iter i = sounds.begin();
+	for (; i != sounds.end(); ++i) {
+		delete *i;
+	}
+}
+
+
+void Object::setPosition(const glm::vec3& v)
+{
+	position = v;
+	// Move attached sounds
+	Sound::Iter i = sounds.begin();
+	for (; i != sounds.end(); ++i) {
+		(*i)->setPosition(position);
+	}
 }
 
 
@@ -26,15 +38,21 @@ void Object::print() const
 		position.x, position.y, position.z);
 	printf("  scale (%f, %f, %f)\n",
 		scaling.x, scaling.y, scaling.z);
-	printf("  rotation\n");
-	printf("	x-axis (%f, %f, %f, %f)\n",
-		rotation.x.x, rotation.x.y, rotation.x.z, rotation.x.w);
-	printf("	y-axis (%f, %f, %f, %f)\n",
-		rotation.y.x, rotation.y.y, rotation.y.z, rotation.y.w);
-	printf("	z-axis (%f, %f, %f, %f)\n",
-		rotation.z.x, rotation.z.y, rotation.z.z, rotation.z.w);
+	printf("  rotation (%f, %f, %f)\n",
+		rotation.x, rotation.y, rotation.z);
 }
 
+
+void Object::translate(const glm::vec3& v)
+{
+	setPosition(position + v);
+}
+
+
+void Object::rotate(const glm::vec3& v)
+{
+	setRotation(rotation + v);
+}
 
 
 void Object::translate() const
@@ -45,12 +63,12 @@ void Object::translate() const
 
 void Object::rotate() const
 {
-	if (rotation.x.w != 0.f)
-		glRotatef(rotation.x.w, rotation.x.x, rotation.x.y, rotation.x.z);
-	if (rotation.y.w != 0.f)
-		glRotatef(rotation.y.w, rotation.y.x, rotation.y.y, rotation.y.z);
-	if (rotation.z.w != 0.f)
-		glRotatef(rotation.z.w, rotation.z.x, rotation.z.y, rotation.z.z);
+	if (rotation.x != 0.f)
+		glRotatef(rotation.x, 1.f, 0.f, 0.f);
+	if (rotation.y != 0.f)
+		glRotatef(rotation.y, 0.f, 1.f, 0.f);
+	if (rotation.z != 0.f)
+		glRotatef(rotation.z, 0.f, 0.f, 1.f);
 }
 
 
@@ -71,9 +89,18 @@ void Object::transform() const
 glm::mat4 Object::getTransformMatrix() const
 {
 	return glm::translate(position) * \
-		   glm::rotate(rotation.x.w, rotation.x.x, rotation.x.y, rotation.x.z) * \
-		   glm::rotate(rotation.y.w, rotation.y.x, rotation.y.y, rotation.y.z) * \
-		   glm::rotate(rotation.z.w, rotation.z.x, rotation.z.y, rotation.z.z) * \
+		   glm::rotate(rotation.x, 1.f, 0.f, 0.f) * \
+		   glm::rotate(rotation.y, 0.f, 1.f, 0.f) * \
+		   glm::rotate(rotation.z, 0.f, 0.f, 1.f) * \
 		   glm::scale(scaling);
+}
+
+
+Sound* Object::addSound()
+{
+	Sound* s = new Sound();
+	sounds.push_back(s);
+	s->setPosition(position);
+	return s;
 }
 

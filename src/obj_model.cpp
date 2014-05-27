@@ -7,7 +7,7 @@
 #include <string.h>
 
 
-void ObjModel::load(const std::string& fname, Scene* scene)
+void ObjModel::load(const std::string& fname, Scene* scene, Camera*)
 {
 	std::vector<float> vertices, normals, texels;
 	std::ifstream file;
@@ -21,7 +21,7 @@ void ObjModel::load(const std::string& fname, Scene* scene)
 		throw Exception("could not open " + fname);
 	}
 
-	printf("reading %s\n", fname.c_str());
+	printf("loading %s\n", fname.c_str());
 
 	// Start reading file data
 	for (; std::getline(file, line); lineCnt++) {
@@ -119,7 +119,6 @@ void ObjModel::load(const std::string& fname, Scene* scene)
 	}
 
 	file.close();
-	printf("done reading %s\n", fname.c_str());
 }
 
 
@@ -137,7 +136,7 @@ void ObjModel::loadMaterials(const std::string& fname, Material::Map* lst)
 		throw Exception("could not open " + fname);
 	}
 
-	printf("reading %s\n", fname.c_str());
+	printf("loading %s\n", fname.c_str());
 
 	// Start reading file data
 	for (; std::getline(file, line); cnt++) {

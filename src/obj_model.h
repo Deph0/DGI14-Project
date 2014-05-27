@@ -10,7 +10,7 @@
 
 class ObjModel : public Model {
 public:
-	void load(const std::string& fname, Scene* scene);
+	void load(const std::string& fname, Scene* scene, Camera* c = NULL);
 
 private:
 	static void loadMaterials(

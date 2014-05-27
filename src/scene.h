@@ -1,7 +1,6 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "camera.h"
 #include "light.h"
 #include "geometry.h"
 #include "material.h"
@@ -18,7 +17,6 @@ public:
 
 	std::string name;
 
-	Camera* camera;
 	Light::List lights;
 	Geometry::List geometries;
 

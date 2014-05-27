@@ -199,8 +199,8 @@ void RainDrops::draw() const
 	for (i = drops.begin(); i != drops.end(); ++i) {
 		if ((*i)->fadingMode)
 			continue;
-		(*i)->mesh->position = (*i)->position;
-		(*i)->mesh->scaling = (*i)->scaling;
+		(*i)->mesh->setPosition((*i)->position);
+		(*i)->mesh->setScaling((*i)->scaling);
 		(*i)->mesh->draw();
 	}
 	shaders.end();

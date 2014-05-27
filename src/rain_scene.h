@@ -14,13 +14,11 @@ public:
 
 private:
 	void on(GlutListener::Initialize);
-	void on(GlutListener::Reshape, int width, int height);
 	void on(GlutListener::Display);
 	void on(GlutListener::Idle, int deltaTime);
 	void on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y);
 	void on(GlutListener::KeyDown, unsigned char key, int x, int y);
 	void on(GlutListener::MouseButton, int button, int state, int x, int y);
-	void on(GlutListener::MouseMove, int x, int y);
 
 	// Zoom in (true) or out (false)
 	void zoom(bool in);
@@ -28,7 +26,6 @@ private:
 	Scene scene;
 	RainDrops raindrops;
 	BackgroundRain bgndRain;
-	glm::ivec2 mousePos;
 	Geometry* glass;
 	float fps;
 };

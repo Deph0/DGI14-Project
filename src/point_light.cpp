@@ -26,7 +26,7 @@ void PointLight::initialize()
 void PointLight::draw() const
 {
 	// Indicates a point light
-	glm::vec4 pos(position, 1.f);
+	glm::vec4 pos(getPosition(), 1.f);
 
 	glLightfv(index, GL_POSITION, &pos.x);
 

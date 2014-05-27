@@ -1,5 +1,13 @@
 #include "camera.h"
 #include "opengl.h"
+#include "sound.h"
+#include "exception.h"
+
+
+void Camera::initialize()
+{
+}
+
 
 void Camera::setPerspective(int width, int height) const
 {
@@ -11,14 +19,43 @@ void Camera::setPerspective(int width, int height) const
 }
 
 
+void Camera::setPosition(const glm::vec3& v)
+{
+	Object::setPosition(v);
+	alListener3f(AL_POSITION, v.x, v.y, v.z);
+}
+
+
+void Camera::setLookAt(const glm::vec3& v)
+{
+	float orientation[6] = {
+		v.x, v.y, v.z, upAxis.x, upAxis.y, upAxis.z
+	};
+	alListenerfv(AL_ORIENTATION, orientation);
+	lookAt = v;
+}
+
+
+void Camera::setUpAxis(const glm::vec3& v)
+{
+	float orientation[6] = {
+		lookAt.x, lookAt.y, lookAt.z, v.x, v.y, v.z
+	};
+	alListenerfv(AL_ORIENTATION, orientation);
+	upAxis = v;
+}
+
+
 void Camera::draw() const
 {
-	gluLookAt(position.x, position.y, position.z,
+	const glm::vec3& pos = getPosition();
+
+	gluLookAt(pos.x, pos.y, pos.z,
 			  lookAt.x, lookAt.y, lookAt.z,
 			  upAxis.x, upAxis.y, upAxis.z);
 	//translate();
-	rotate();
-	scale();
+	Object::rotate();
+	Object::scale();
 }
 
 

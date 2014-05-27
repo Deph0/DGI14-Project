@@ -4,11 +4,13 @@ INCS = -I../lib
 DEFS =
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
-LDFLAGS = -L../lib/pugixml -framework GLUT -framework OpenGL
+LDFLAGS = -L../lib/pugixml \
+-framework GLUT -framework OpenGL \
+-framework ALUT -framework OpenAL
 LIBS = -lSOIL -lpugixml -lGLEW
 else
 LDFLAGS = -L../lib/pugixml -L../lib/SOIL
-LIBS = -lGL -lglut -lGLU -lGLEW -lSOIL -lpugixml
+LIBS = -lGL -lglut -lGLU -lGLEW -lSOIL -lpugixml -lalut
 endif
 TARGET = rainyday
 SRCS = \
@@ -28,6 +30,7 @@ shader.cpp \
 shader_program.cpp \
 rain_drops.cpp \
 background_rain.cpp \
+sound.cpp \
 rain_scene.cpp \
 rainy_day.cpp
 OBJS = $(SRCS:.cpp=.o)

@@ -3,12 +3,11 @@
 #include "point_light.h"
 #include "util.h"
 #include "settings.h"
-#include <glm/gtx/rotate_vector.hpp>
+#include "camera.h"
 
 
 RainScene::RainScene()
 : glass(NULL)
-, fps(0.f)
 {
 }
 
@@ -21,19 +20,19 @@ RainScene::~RainScene()
 
 void RainScene::on(GlutListener::Initialize)
 {
+	Camera* camera = Camera::getInstance();
 	DaeModel loader;
 
-	loader.load(util::resource_path("starter_file.dae"), &scene);
+	loader.load(util::resource_path("starter_file.dae"), &scene, camera);
 
-	Camera* c = scene.camera;
 	// LookAt not present in dae file
-	c->lookAt = glm::vec3(0, 0, 3);
+	camera->setLookAt(glm::vec3(0.f, 0.f, 3.f));
 	// Blender sets very strange rotation by default
-	c->resetRotation();
+	camera->setRotation(glm::vec3(0.f));
 	// Setting the best view position found with
 	// scene.camera.print() in onSpecialKeyDown function
-	//c->position = glm::vec3(-0.587549, -9.783041, 3.032476);
-	c->position = glm::vec3(0, -9.204037, 3.032476);
+	//c->setPosition(glm::vec3(-0.587549, -9.783041, 3.032476));
+	camera->setPosition(glm::vec3(0, -9.204037, 3.032476));
 
 	// Fix too darkness
 	PointLight* lamp = (PointLight*)scene.getByName("InsideLamp");
@@ -46,6 +45,7 @@ void RainScene::on(GlutListener::Initialize)
 	}
 
 	// Initialize the main scene
+	camera->initialize();
 	scene.initialize();
 	// Pick out the window glass to be drawn last because
 	// of it's transparency
@@ -57,12 +57,12 @@ void RainScene::on(GlutListener::Initialize)
 
 	// Background rain
 	bgndRain.initialize();
-}
 
-
-void RainScene::on(GlutListener::Reshape, int width, int height)
-{
-	scene.camera->setPerspective(width, height);
+	// Add sound of the rain
+	Sound* s = glass->addSound();
+	s->load(util::resource_path("rain_inside_house.wav"));
+	s->enableLoop();
+	s->play();
 }
 
 
@@ -78,8 +78,8 @@ void RainScene::on(GlutListener::Display)
 void RainScene::on(GlutListener::Idle, int deltaTime)
 {
 	bool redraw = false;
+	float fps = 1000.f / deltaTime;
 
-	fps = 1000.f / deltaTime;
 	glutSetWindowTitle(util::format("%s - FPS: %4.2f", WINDOW_TITLE, fps).c_str());
 
 	redraw |= raindrops.animate();
@@ -103,29 +103,29 @@ void RainScene::on(GlutListener::KeyDown, unsigned char key, int x, int y)
 
 void RainScene::on(GlutListener::SpecialKeyDown, unsigned char key, int x, int y)
 {
-	Camera* c = scene.camera;
+	Camera* c = Camera::getInstance();
 	float speed = 0.1f;
 
 	bool ctrl = glutGetModifiers() & GLUT_ACTIVE_CTRL;
 
 	switch (key) {
 	case GLUT_KEY_UP:
-		c->position.z += speed;
+		c->translate(glm::vec3(0.f, 0.f, speed));
 		break;
 	case GLUT_KEY_DOWN:
-		c->position.z -= speed;
+		c->translate(glm::vec3(0.f, 0.f, -speed));
 		break;
 	case GLUT_KEY_LEFT:
 		if (ctrl)
-			c->rotation.z.w += 1.f;
+			c->rotate(glm::vec3(0.f, 0.f, 1.f));
 		else
-			c->position.x -= speed;
+			c->translate(glm::vec3(-speed, 0.f, 0.f));
 		break;
 	case GLUT_KEY_RIGHT:
 		if (ctrl)
-			c->rotation.z.w -= 1.f;
+			c->rotate(glm::vec3(0.f, 0.f, -1.f));
 		else
-			c->position.x += speed;
+			c->translate(glm::vec3(speed, 0.f, 0.f));
 		break;
 	default:
 		return;
@@ -140,11 +140,6 @@ void RainScene::on(GlutListener::MouseButton, int button, int state, int x, int 
 {
 	if (state != GLUT_DOWN)
 		return;
-	if (button == GLUT_LEFT_BUTTON) {
-		// Left mouse button pressed
-		mousePos.x = x;
-		mousePos.y = y;
-	}
 	// Wheel reports as button 3 (scroll up) and button 4 (scroll down)
 	// Each wheel event reports like a button click, GLUT_DOWN then GLUT_UP
 	if (button == 3) {
@@ -158,25 +153,13 @@ void RainScene::on(GlutListener::MouseButton, int button, int state, int x, int 
 }
 
 
-void RainScene::on(GlutListener::MouseMove, int x, int y)
-{
-	Camera* c = scene.camera;
-	float speed = 0.1f;
-
-	c->rotation.x.w = (mousePos.y - y) * speed;
-	c->rotation.y.w = (mousePos.x - x) * speed;
-
-	glutPostRedisplay();
-}
-
-
 void RainScene::zoom(bool in)
 {
-	Camera* c = scene.camera;
-	const glm::vec3& dir = c->lookAt - c->position;
+	Camera* c = Camera::getInstance();
+	const glm::vec3& dir = c->getLookAt() - c->getPosition();
 	float speed = in ? 0.02f : -0.02f;
 
-	c->position = c->position + dir * speed;
+	c->translate(dir * speed);
 	glutPostRedisplay();
 }
 

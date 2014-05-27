@@ -1,6 +1,8 @@
 #include "opengl.h"
 #include "rainy_day.h"
 #include "settings.h"
+#include "sound.h"
+#include "camera.h"
 
 
 RainyDay::RainyDay()
@@ -45,6 +47,7 @@ void RainyDay::initialize()
 
 void RainyDay::reshape(int width, int height)
 {
+	Camera::getInstance()->setPerspective(width, height);
 	RainyDay::getInstance()->fire(GlutListener::Reshape(), width, height);
 	// Something is not initialized in correct order.
 	// A quick fix for that.
@@ -57,6 +60,7 @@ void RainyDay::display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
+	Camera::getInstance()->draw();
 	RainyDay::getInstance()->fire(GlutListener::Display());
 
 	glutSwapBuffers();
@@ -103,12 +107,24 @@ void RainyDay::mouseMove(int x, int y)
 }
 
 
+void onShutdown()
+{
+	printf("shutting down\n");
+	// Clean up
+	delete RainyDay::getInstance();
+	delete Camera::getInstance();
+	Sound::shutdown();
+}
+
+
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(800, 600);
 	glutCreateWindow(WINDOW_TITLE);
+
+	atexit(onShutdown);
 
 	glewInit();
 	if (glewIsSupported("GL_VERSION_2_0"))
@@ -119,6 +135,7 @@ int main(int argc, char** argv)
 	}
 
 	try {
+		Sound::initialize();
 		RainyDay::getInstance()->initialize();
 	}
 	catch (const std::exception& e) {

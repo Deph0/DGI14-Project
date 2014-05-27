@@ -12,7 +12,7 @@ public:
 	DaeModel();
 	~DaeModel();
 
-	void load(const std::string& fname, Scene* scene);
+	void load(const std::string& fname, Scene* scene, Camera* camera);
 
 private:
 	static void readObjectParams(

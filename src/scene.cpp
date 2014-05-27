@@ -2,7 +2,6 @@
 
 
 Scene::Scene()
-: camera(NULL)
 {
 }
 
@@ -26,9 +25,6 @@ Scene::~Scene()
 
 void Scene::initialize()
 {
-	if (camera)
-		camera->initialize();
-
 	if (lights.size()) {
 		glEnable(GL_LIGHTING);
 
@@ -53,9 +49,6 @@ void Scene::initialize()
 
 void Scene::draw() const
 {
-	if (camera)
-		camera->draw();
-
 	Light::cIter li = lights.begin();
 	for (; li != lights.end(); ++li) {
 		(*li)->draw();
@@ -70,12 +63,6 @@ void Scene::draw() const
 
 Object* Scene::getByName(const std::string& name, bool erase)
 {
-	if (camera && camera->name == name) {
-		Camera* obj = camera;
-		if (erase)
-			camera = NULL;
-		return obj;
-	}
 	// Check lights
 	Light::Iter li = lights.begin();
 	for (; li != lights.end(); ++li) {

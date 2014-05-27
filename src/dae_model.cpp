@@ -3,6 +3,7 @@
 #include "texture.h"
 #include "point_light.h"
 #include "exception.h"
+#include "camera.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -17,7 +18,7 @@ DaeModel::~DaeModel()
 }
 
 
-void DaeModel::load(const std::string& fname, Scene* scene)
+void DaeModel::load(const std::string& fname, Scene* scene, Camera* camera)
 {
 	pugi::xml_document doc;
 	pugi::xml_node node, instance;
@@ -25,6 +26,7 @@ void DaeModel::load(const std::string& fname, Scene* scene)
 	std::string ref;
 	Object* obj;
 
+	printf("loading %s\n", fname.c_str());
 	if (!result)
 		throw Exception(result.description());
 
@@ -44,9 +46,10 @@ void DaeModel::load(const std::string& fname, Scene* scene)
 			throw Exception("can't find type of node");
 		ref = instance.attribute("url").value() + 1;
 		if (strcmp(instance.name() + 9, "camera") == 0) {
-			obj = new Camera();
-			readCameraParams(doc, ref, (Camera*)obj);
-			scene->camera = (Camera*)obj;
+			if (camera == NULL)
+				continue;
+			readCameraParams(doc, ref, camera);
+			obj = camera;
 		}
 		else if (strcmp(instance.name() + 9, "light") == 0) {
 			obj = readLightParams(doc, ref);
@@ -186,6 +189,9 @@ void DaeModel::readMaterials(const pugi::xml_document& doc, Material::Map* lst)
 void DaeModel::readObjectParams(const pugi::xml_node& node, Object* obj)
 {
 	std::string str;
+	glm::vec3 rotation(0.f);
+	glm::vec3 position(0.f);
+	glm::vec3 scaling(0.f);
 	glm::vec3* v3;
 
 	pugi::xml_node_iterator it = node.begin();
@@ -193,32 +199,33 @@ void DaeModel::readObjectParams(const pugi::xml_node& node, Object* obj)
 		str = it->name();
 		if (str == "rotate") {
 			str = it->attribute("sid").value();
-			glm::vec4* v4;
+			float* angle;
 
 			if (str == "rotationX")
-				v4 = &obj->rotation.x;
+				angle = &rotation.x;
 			else if (str == "rotationY")
-				v4 = &obj->rotation.y;
+				angle = &rotation.y;
 			else if (str == "rotationZ")
-				v4 = &obj->rotation.z;
+				angle = &rotation.z;
 			else continue;
 
-			if (sscanf(it->text().get(), "%f %f %f %f",
-				&v4->x, &v4->y, &v4->z, &v4->w) != 4)
-			{
+			if (sscanf(it->text().get(), "%*f %*f %*f %f", angle) != 1)
 				throw Exception("missing parameters for camera in " + str);
-			}
 			continue;
 		}
 		if (str == "translate")
-			v3 = &obj->position;
+			v3 = &position;
 		else if (str == "scale")
-			v3 = &obj->scaling;
+			v3 = &scaling;
 		else continue;
 
 		if (sscanf(it->text().get(), "%f %f %f", &v3->x, &v3->y, &v3->z) != 3)
 			throw Exception("missing parameters for camera in " + str);
 	}
+	// Apply transformation
+	obj->setPosition(position);
+	obj->setRotation(rotation);
+	obj->setScaling(scaling);
 }
 
 
@@ -227,6 +234,7 @@ void DaeModel::readCameraParams(
 {
 	pugi::xml_node node;
 	std::string str;
+	glm::vec3 upAxis(0.f);
 
 	node = doc.select_single_node(("//camera[@id='" + ref + \
 		"']/optics/technique_common/perspective").c_str()).node();
@@ -238,12 +246,12 @@ void DaeModel::readCameraParams(
 	camera->zFar = node.child("zfar").text().as_float(100);
 
 	// Get the up axis
-	camera->upAxis.x = camera->upAxis.y = camera->upAxis.z = 0.f;
 	str = doc.select_single_node("//up_axis").node().text().get();
 	if (str == "Z_UP")
-		camera->upAxis.z = 1.f;
+		upAxis.z = 1.f;
 	else
 		throw Exception("unknown camera up axes [" + str + "] for id " + ref);
+	camera->setUpAxis(upAxis);
 }
 
 
