@@ -60,7 +60,8 @@ void RainScene::on(GlutListener::Initialize)
 
 	// Add sound of the rain
 	Sound* s = glass->addSound();
-	s->load(util::resource_path("rain_inside_house.wav"));
+	//s->load(util::resource_path("rain_inside_house.wav"));
+	s->load(util::resource_path("rain_1.wav"));
 	s->enableLoop();
 	s->play();
 }

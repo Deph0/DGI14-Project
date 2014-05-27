@@ -10,7 +10,7 @@ LDFLAGS = -L../lib/pugixml \
 LIBS = -lSOIL -lpugixml -lGLEW
 else
 LDFLAGS = -L../lib/pugixml -L../lib/SOIL
-LIBS = -lGL -lglut -lGLU -lGLEW -lSOIL -lpugixml -lalut
+LIBS = -lGL -lglut -lGLU -lGLEW -lSOIL -lpugixml -lalut -lopenal
 endif
 TARGET = rainyday
 SRCS = \
