@@ -2,6 +2,7 @@
 #define SOUND_H
 
 #include <list>
+#include <vector>
 #include <map>
 #include <string>
 #include <glm/glm.hpp>
@@ -11,8 +12,7 @@
 class Sound {
 public:
 	typedef std::list<Sound*> List;
-	typedef List::const_iterator cIter;
-	typedef List::iterator Iter;
+	typedef std::vector<Sound*> Vector;
 
 	// Initialize ALUT library
 	static void initialize();

@@ -59,11 +59,19 @@ void RainScene::on(GlutListener::Initialize)
 	bgndRain.initialize();
 
 	// Add sound of the rain
-	Sound* s = glass->addSound();
-	//s->load(util::resource_path("rain_inside_house.wav"));
-	s->load(util::resource_path("rain_1.wav"));
-	s->enableLoop();
-	s->play();
+	Sound* rain = glass->addSound();
+	rain->load(util::resource_path("rain_1.wav"));
+	rain->enableLoop();
+	rain->play();
+	// Load thunders to be played at random time
+	const char* thunders[] = {
+		"thunderfade_1.wav", "loudthunderfade_1.wav", NULL
+	};
+	for (int i = 0; thunders[i]; i++) {
+		Sound* t = glass->addSound();
+		t->load(util::resource_path(thunders[i]));
+		thunderSounds.push_back(t);
+	}
 }
 
 
@@ -80,14 +88,24 @@ void RainScene::on(GlutListener::Idle, int deltaTime)
 {
 	bool redraw = false;
 	float fps = 1000.f / deltaTime;
+	time_t curTime = time(NULL);
+	static time_t nextThunderTime = curTime + 5 + (rand() % 10);
 
-	glutSetWindowTitle(util::format("%s - FPS: %4.2f", WINDOW_TITLE, fps).c_str());
+	glutSetWindowTitle(util::format("%s - FPS: %4.2f - Next thunder in %u seconds",
+		WINDOW_TITLE, fps, nextThunderTime - curTime).c_str());
 
 	redraw |= raindrops.animate();
 	redraw |= bgndRain.animate();
 
 	if (redraw)
 		glutPostRedisplay();
+
+	if (nextThunderTime <= curTime) {
+		int i = rand() % thunderSounds.size();
+		thunderSounds[i]->play();
+		// Randomize to next one
+		nextThunderTime = rand() % 60 + 60 + curTime;
+	}
 }
 
 void RainScene::on(GlutListener::KeyDown, unsigned char key, int x, int y)

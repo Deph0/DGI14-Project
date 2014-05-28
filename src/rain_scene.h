@@ -6,6 +6,8 @@
 #include "background_rain.h"
 #include "glut_listener.h"
 
+class Sound;
+
 
 class RainScene : public GlutListener {
 public:
@@ -27,7 +29,7 @@ private:
 	RainDrops raindrops;
 	BackgroundRain bgndRain;
 	Geometry* glass;
-	float fps;
+	Sound::Vector thunderSounds;
 };
 
 #endif // RAIN_SCENE_H

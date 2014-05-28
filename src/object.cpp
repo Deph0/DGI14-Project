@@ -13,7 +13,7 @@ Object::Object()
 
 Object::~Object()
 {
-	Sound::Iter i = sounds.begin();
+	Sound::List::iterator i = sounds.begin();
 	for (; i != sounds.end(); ++i) {
 		delete *i;
 	}
@@ -24,7 +24,7 @@ void Object::setPosition(const glm::vec3& v)
 {
 	position = v;
 	// Move attached sounds
-	Sound::Iter i = sounds.begin();
+	Sound::List::iterator i = sounds.begin();
 	for (; i != sounds.end(); ++i) {
 		(*i)->setPosition(position);
 	}
