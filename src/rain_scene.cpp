@@ -78,8 +78,8 @@ void RainScene::on(GlutListener::Initialize)
 void RainScene::on(GlutListener::Display)
 {
 	scene.draw();
-	raindrops.draw();
 	bgndRain.draw();
+	raindrops.draw();
 	glass->draw();
 }
 
