@@ -72,7 +72,7 @@ BackgroundRain::RainDrop::RainDrop()
 		util::rand_range(0.f, 4.f, 1000),
 		7.f);
 	speed = util::rand_range(0.15f, 0.45f, 10);
-	alpha = 0.1f;
+	alpha = 0.4f;
 	position = start;
 }
 
@@ -88,7 +88,7 @@ bool BackgroundRain::RainDrop::update()
 
 void BackgroundRain::RainDrop::draw() const
 {
-	glColor4f(1.f, 1.f, 1.f, alpha);
+	glColor4f(1.f, 0.67f, 0.36f, alpha);
 	glVertex3fv(&position.x);
 	glVertex3f(position.x, position.y, position.z - speed / 6.f);
 }
