@@ -6,13 +6,15 @@
 
 #ifdef __APPLE__ // Defined on Mac OS X
 
+// OpenGL
 #include <GLUT/glut.h>
 // OpenAL
 #include <OpenAL/al.h>
-#include <ALUT/alut.h>
+#include <AL/alut.h>
 
 #elif __linux__ // Defined on Linux
 
+// OpenGL
 #include <GL/glut.h>
 // OpenAL
 #include <AL/al.h>
