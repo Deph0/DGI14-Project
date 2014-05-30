@@ -7,7 +7,7 @@ To build, you will need to build and install these "plugins":
 http://glew.sourceforge.net/install.html (make, make install)
 
 -freealut, because Apple decided Alut isnt a part of OpenAL anymore.
-https://github.com/vancegroup/freealut (make, make install)
+https://github.com/vancegroup/freealut (mkdir build, cd build, make, make install)
 
 -SoilLib (Simple OpenGL Image Library)
 http://www.lonesock.net/soil.html
