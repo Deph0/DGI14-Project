@@ -1,0 +1,13 @@
+
+to build with Mac OSX, you'll need Xcode which downloads the frameworks nessery for you, including OpenGL and OpenAL.
+
+
+To build, you will need to build and install these "plugins":
+-glew
+http://glew.sourceforge.net/install.html (make, make install)
+
+-freealut, because Apple decided Alut isnt a part of OpenAL anymore.
+https://github.com/vancegroup/freealut (make, make install)
+
+-SoilLib (Simple OpenGL Image Library)
+http://www.lonesock.net/soil.html
