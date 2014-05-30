@@ -6,7 +6,7 @@ UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
 LDFLAGS = -L../lib/pugixml \
 -framework GLUT -framework OpenGL \
--framework ALUT -framework OpenAL
+-lalut -framework OpenAL
 LIBS = -lSOIL -lpugixml -lGLEW
 else
 LDFLAGS = -L../lib/pugixml -L../lib/SOIL
